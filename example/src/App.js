@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <main>
       <h1>React FirebaseUI Component Demo</h1>
-      <FirebaseUI config={UIConfig} />
+      <FirebaseUI auth={auth} config={UIConfig} />
       {user && (
         <div>
           <pre>{JSON.stringify({ user }, null, 2)}</pre>

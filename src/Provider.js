@@ -16,6 +16,7 @@ import PhoneNumber from "./PhoneNumber";
 import { errors } from "./Errors";
 
 export default function Provider({
+  auth,
   providerId,
   signInFlow,
   scopes,
@@ -46,7 +47,6 @@ export default function Provider({
   if (providerId == "anonymous" && !fullLabel) {
     fullLabel = "Sign In As Guest";
   }
-  const auth = getAuth();
 
   const providerMap = {
     "google.com": () => new GoogleAuthProvider(),
@@ -109,6 +109,7 @@ export default function Provider({
 
   return providerId == "emailpassword" ? (
     <EmailPassword
+      auth={auth}
       callbacks={callbacks}
       authType={authType}
       resetContinueUrl={resetContinueUrl}

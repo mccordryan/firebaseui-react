@@ -3,12 +3,9 @@ import Provider from "./Provider";
 import { providerStyles } from "./providerStyles";
 import PhoneNumber from "./PhoneNumber";
 import EmailLink from "./EmailLink";
-import { getAuth, isSignInWithEmailLink } from "firebase/auth";
+import { isSignInWithEmailLink } from "firebase/auth";
 
-export default function FirebaseUI({ config }) {
-  // TODO: why not config.auth?
-  const auth = getAuth();
-
+export default function FirebaseUI({ auth, config }) {
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
@@ -26,6 +23,7 @@ export default function FirebaseUI({ config }) {
               return (
                 <Provider
                   key={i}
+                  auth={auth}
                   providerId={provider}
                   callbacks={config?.callbacks}
                   resetContinueUrl={config?.resetContinueUrl}
@@ -39,6 +37,7 @@ export default function FirebaseUI({ config }) {
               return (
                 <Provider
                   key={i}
+                  auth={auth}
                   providerId={provider?.provider}
                   {...provider}
                   callbacks={config?.callbacks}
@@ -53,6 +52,7 @@ export default function FirebaseUI({ config }) {
           })}
         {sendSMS && (
           <PhoneNumber
+            auth={auth}
             setSendSMS={setSendSMS}
             setAlert={setAlert}
             setError={setError}
@@ -60,6 +60,7 @@ export default function FirebaseUI({ config }) {
         )}
         {emailLinkOpen && (
           <EmailLink
+            auth={auth}
             setEmailLinkOpen={setEmailLinkOpen}
             resetContinueUrl={config?.resetContinueUrl}
             setAlert={setAlert}

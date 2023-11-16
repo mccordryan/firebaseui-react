@@ -1,35 +1,18 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "production",
-  // entry: "./src/index.js",
-  // entry: path.resolve(__dirname, "example", "src", "index.js"),
-  entry: "./example/src/index.js",
+  entry: "./src/index.js", // Entry point for your library
   output: {
-    path: path.resolve(__dirname, "example", "public"),
-    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.js",
+    library: "ReactFirebaseUI",
     libraryTarget: "umd",
     globalObject: "this",
   },
-  // externals: {
-  //   react: "react",
-  // },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./example/public/index.html",
-    }),
-  ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "example", "public"),
-    },
-    compress: true,
-    port: 8080,
-  },
-  performance: {
-    maxAssetSize: 700000,
-    maxEntrypointSize: 700000,
+  externals: {
+    react: "React",
+    "react-dom": "ReactDOM",
   },
   module: {
     rules: [

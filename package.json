@@ -1,10 +1,11 @@
 {
   "name": "react-firebaseui",
   "version": "0.1.0",
-  "private": true,
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "webpack",
-    "start": "webpack serve --open",
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack serve --config webpack.config.dev.js --open",
     "publish": "npm publish",
     "test": "jest"
   },

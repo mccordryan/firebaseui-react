@@ -3,14 +3,21 @@
 import React from "react";
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
 import { errors } from "./Errors";
 
-export default function EmailPassword({ callbacks, authType, setAlert, setError, resetContinueUrl, passwordSpecs }) {
+export default function EmailPassword({
+  auth,
+  callbacks,
+  authType,
+  setAlert,
+  setError,
+  resetContinueUrl,
+  passwordSpecs,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -21,7 +28,7 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
 
   useEffect(() => {
     setFormIsValid(
-      isEmailValid() && (resetPassword ? true : isPasswordValid())
+      isEmailValid() && (resetPassword ? true : isPasswordValid()),
     );
 
     setShowPassHelper(!isPasswordValid() && password.length > 0);
@@ -36,7 +43,7 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
     let isValid = password.length > 5; //basic firebase requirement
 
     if (passwordSpecs?.minCharacters) {
-      isValid = isValid && password.length >= passwordSpecs?.minCharacters
+      isValid = isValid && password.length >= passwordSpecs?.minCharacters;
     }
 
     if (passwordSpecs?.containsUppercase) {
@@ -52,38 +59,51 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
     }
 
     if (passwordSpecs?.containsSpecialCharacter) {
-      isValid = isValid && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+      isValid =
+        isValid && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
     }
 
     return isValid;
-
-  }
+  };
 
   //allow sign in AND sign up if not specified
   if (!authType) authType = "both";
 
   const authenticateUser = async () => {
-    const auth = getAuth();
     //TODO error handling
     if (authType == "both") {
       try {
         await signInWithEmailAndPassword(auth, email, password).then((user) => {
-          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(user);
-        })
+          if (callbacks?.signInSuccessWithAuthResult)
+            callbacks.signInSuccessWithAuthResult(user);
+        });
       } catch (signInError) {
         try {
-          await createUserWithEmailAndPassword(auth, email, password).then((user) => {
-            if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(user);
-          })
+          await createUserWithEmailAndPassword(auth, email, password).then(
+            (user) => {
+              if (callbacks?.signInSuccessWithAuthResult)
+                callbacks.signInSuccessWithAuthResult(user);
+            },
+          );
         } catch (signUpError) {
           if (signUpError.code === "auth/email-already-in-use") {
-            setError(errors[signInError.code] === "" ? "" : errors[signInError.code] || "Something went wrong. Try again later.")
-            if (callbacks?.signInFailure) callbacks?.signInFailure(signInError)
-            throw new Error(signInError.code)
+            setError(
+              errors[signInError.code] === ""
+                ? ""
+                : errors[signInError.code] ||
+                    "Something went wrong. Try again later.",
+            );
+            if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
+            throw new Error(signInError.code);
           } else {
-            setError(errors[signUpError.code] === "" ? "" : errors[signUpError.code] || "Something went wrong. Try again later.")
-            if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError)
-            throw new Error(signUpError.code)
+            setError(
+              errors[signUpError.code] === ""
+                ? ""
+                : errors[signUpError.code] ||
+                    "Something went wrong. Try again later.",
+            );
+            if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError);
+            throw new Error(signUpError.code);
           }
         }
       }
@@ -98,12 +118,16 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
             callbacks.signInSuccessWithAuthResult(user);
         });
       } catch (error) {
-        setError(errors[error.code] === "" ? "" : errors[error.code] || "Something went wrong. Try again later.")
+        setError(
+          errors[error.code] === ""
+            ? ""
+            : errors[error.code] || "Something went wrong. Try again later.",
+        );
         if (callbacks?.signInFailure) callbacks?.signInFailure(error);
-        throw new Error(error.code)
+        throw new Error(error.code);
       }
     } else {
-      throw new Error("FirebaseUI/invalid-auth-type")
+      throw new Error("FirebaseUI/invalid-auth-type");
     }
   };
 
@@ -111,26 +135,24 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
     e.preventDefault();
     if (!formIsValid) {
       if (!isEmailValid()) {
-        setAlert("Please enter a valid email address.")
+        setAlert("Please enter a valid email address.");
       } else {
-        setAlert("Please enter a valid password.")
+        setAlert("Please enter a valid password.");
       }
 
       return;
     }
 
     if (resetPassword) {
-      const auth = getAuth();
       await sendPasswordResetEmail(auth, email, {
         handleCodeInApp: true,
         url: resetContinueUrl,
       }).then(() => {
-        setAlert(`A reset-password email has been sent to ${email}.`)
-      })
+        setAlert(`A reset-password email has been sent to ${email}.`);
+      });
     } else {
       await authenticateUser();
     }
-
   };
 
   return (
@@ -178,18 +200,29 @@ export default function EmailPassword({ callbacks, authType, setAlert, setError,
               onChange={(e) => setPassword(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 w-full"
             />
-            {showPassHelper &&
+            {showPassHelper && (
               <div className="w-1/5 p-2 shadow-md rounded-md absolute bg-white">
                 <p>Your password must contain:</p>
                 <ul>
-                  {password.length < (passwordSpecs?.minCharacters || 6) && <li>- At least {passwordSpecs?.minCharacters || 6} characters</li>}
-                  {passwordSpecs?.containsUppercase && !/[A-Z]/.test(password) && <li>- 1 uppercase character</li>}
-                  {passwordSpecs?.containsLowercase && !/[a-z]/.test(password) && <li>- 1 lowercase character</li>}
-                  {passwordSpecs?.containsNumber && !/\d/.test(password) && <li>- 1 number</li>}
-                  {passwordSpecs?.containsSpecialCharacter && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && <li>- 1 special character</li>}
+                  {password.length < (passwordSpecs?.minCharacters || 6) && (
+                    <li>
+                      - At least {passwordSpecs?.minCharacters || 6} characters
+                    </li>
+                  )}
+                  {passwordSpecs?.containsUppercase &&
+                    !/[A-Z]/.test(password) && <li>- 1 uppercase character</li>}
+                  {passwordSpecs?.containsLowercase &&
+                    !/[a-z]/.test(password) && <li>- 1 lowercase character</li>}
+                  {passwordSpecs?.containsNumber && !/\d/.test(password) && (
+                    <li>- 1 number</li>
+                  )}
+                  {passwordSpecs?.containsSpecialCharacter &&
+                    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && (
+                      <li>- 1 special character</li>
+                    )}
                 </ul>
               </div>
-            }
+            )}
           </div>
         </div>
       )}

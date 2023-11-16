@@ -12,10 +12,12 @@ describe("<EmailPassword/>", () => {
 
   test("form validation", () => {
     const mockCallback = jest.fn();
+    const mockSetError = jest.fn();
 
     render(
       <EmailPassword
         callbacks={{ signInSuccessWithAuthResult: mockCallback }}
+        setError={mockSetError}
       />,
     );
     fireEvent.change(screen.getByLabelText(/email address/i), {
@@ -24,8 +26,11 @@ describe("<EmailPassword/>", () => {
     fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "bebop123!" },
     });
-    fireEvent.click(
-      screen.getByRole("button", { name: /sign in with email/i }),
-    );
+    // fireEvent.click(
+    //   screen.getByRole("button", { name: /sign in with email/i }),
+    // );
+
+    expect(mockCallback).toHaveBeenCalledTimes(1);
+    expect(mockSetError).toHaveBeenCalledTimes(0);
   });
 });
