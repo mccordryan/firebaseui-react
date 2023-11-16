@@ -1,10 +1,10 @@
-"use client";
-
-import FirebaseUI from "./FirebaseUI";
+import React, { useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { useEffect, useState } from "react";
-import firebaseConfig from "../firebaseConfig.json";
+
+// import FirebaseUI from "react-firebaseui";
+import FirebaseUI from "../../src/index";
+import firebaseConfig from "./firebaseConfig.json";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -19,9 +19,24 @@ export default function Home() {
       signInFailure: function (error) {
         console.log("somtin went wrong :9 :((");
         console.error(error);
-      }
+      },
     },
-    signInOptions: [{ provider: "emailpassword" }, { provider: "google.com", customParameters: { prompt: 'select_account' } }, "apple.com", "microsoft.com", "yahoo.com", "github.com", "x.com", "phonenumber", "facebook.com", "emaillink", "anonymous"],
+    signInOptions: [
+      { provider: "emailpassword" },
+      {
+        provider: "google.com",
+        customParameters: { prompt: "select_account" },
+      },
+      "apple.com",
+      "microsoft.com",
+      "yahoo.com",
+      "github.com",
+      "x.com",
+      "phonenumber",
+      "facebook.com",
+      "emaillink",
+      "anonymous",
+    ],
   };
 
   const [user, setUser] = useState(auth.currentUser);
@@ -35,7 +50,8 @@ export default function Home() {
   }, [auth]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main>
+      <h1>React FirebaseUI Component Demo</h1>
       <FirebaseUI config={UIConfig} />
       {user && (
         <button
@@ -48,3 +64,14 @@ export default function Home() {
     </main>
   );
 }
+
+// import React from "react";
+
+// export default function App() {
+//   return (
+//     <div>
+//       <h1>React FirebaseUI Component Demo</h1>
+//       <FirebaseUI />
+//     </div>
+//   );
+// }

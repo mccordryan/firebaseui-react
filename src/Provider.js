@@ -1,5 +1,4 @@
-"use client";
-
+import React from "react";
 import {
   FacebookAuthProvider,
   GithubAuthProvider,
@@ -35,9 +34,9 @@ export default function Provider({
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
-      providerName = "Email Link"
+      providerName = "Email Link";
     } else if (providerId == "phonenumber") {
-      providerName = "Phone Number"
+      providerName = "Phone Number";
     } else {
       let match = providerId.match(/^([^.]+)/);
       providerName = match[1].charAt(0).toUpperCase() + match[1].slice(1);
@@ -45,7 +44,7 @@ export default function Provider({
   }
 
   if (providerId == "anonymous" && !fullLabel) {
-    fullLabel = "Sign In As Guest"
+    fullLabel = "Sign In As Guest";
   }
   const auth = getAuth();
 
@@ -82,10 +81,12 @@ export default function Provider({
     if (providerId == "emaillink") {
       await setEmailLinkOpen(true);
     } else if (providerId == "phonenumber") {
-      await setSendSMS(true)
+      await setSendSMS(true);
     } else {
       const flowFunction = () =>
-        providerId == "anonymous" ? signInAnonymously(auth) : signInFlow == "redirect"
+        providerId == "anonymous"
+          ? signInAnonymously(auth)
+          : signInFlow == "redirect"
           ? signInWithRedirect(auth, provider)
           : signInWithPopup(auth, provider);
       try {
@@ -93,12 +94,15 @@ export default function Provider({
           callbacks?.signInSuccessWithAuthResult(user);
         });
       } catch (error) {
-        setError(errors[error.code] === "" ? "" : errors[error.code] || "Something went wrong. Try again later.")
+        setError(
+          errors[error.code] === ""
+            ? ""
+            : errors[error.code] || "Something went wrong. Try again later.",
+        );
         callbacks?.signInFailure(error);
       }
     }
   };
-
 
   const styles = providerStyles[providerId] || providerStyles["default"];
   const buttonStyles = { ...styles?.buttonStyles, ...(customStyles || null) };

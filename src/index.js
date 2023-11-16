@@ -1,5 +1,4 @@
-"use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import Provider from "./Provider";
 import { providerStyles } from "./providerStyles";
 import PhoneNumber from "./PhoneNumber";
@@ -10,7 +9,7 @@ export default function FirebaseUI({ config }) {
   const auth = getAuth();
 
   const [emailLinkOpen, setEmailLinkOpen] = useState(
-    isSignInWithEmailLink(auth, window.location.href)
+    isSignInWithEmailLink(auth, window.location.href),
   );
   const [sendSMS, setSendSMS] = useState(false);
   const [alert, setAlert] = useState("");
@@ -51,8 +50,13 @@ export default function FirebaseUI({ config }) {
               );
             }
           })}
-        {sendSMS && <PhoneNumber setSendSMS={setSendSMS} setAlert={setAlert}
-          setError={setError} />}
+        {sendSMS && (
+          <PhoneNumber
+            setSendSMS={setSendSMS}
+            setAlert={setAlert}
+            setError={setError}
+          />
+        )}
         {emailLinkOpen && (
           <EmailLink
             setEmailLinkOpen={setEmailLinkOpen}
@@ -62,13 +66,22 @@ export default function FirebaseUI({ config }) {
           />
         )}
 
-        {alert && <div onClick={() => setAlert("")} className="p-1 w-full bg-yellow-100 border shadow-md border-yellow-200 rounded-md flex flex-col">
-          <p className="p-1">{alert}</p>
-
-        </div>}
-        {error && <div onClick={() => setError("")} className="p-1 w-full bg-red-100 border shadow-md border-red-200 rounded-md">
-          <p className="p-1 ">{error}</p>
-        </div>}
+        {alert && (
+          <div
+            onClick={() => setAlert("")}
+            className="p-1 w-full bg-yellow-100 border shadow-md border-yellow-200 rounded-md flex flex-col"
+          >
+            <p className="p-1">{alert}</p>
+          </div>
+        )}
+        {error && (
+          <div
+            onClick={() => setError("")}
+            className="p-1 w-full bg-red-100 border shadow-md border-red-200 rounded-md"
+          >
+            <p className="p-1 ">{error}</p>
+          </div>
+        )}
       </div>
     </>
   );
