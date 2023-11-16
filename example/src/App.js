@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
+// in your app, use this import instead:
 // import FirebaseUI from "react-firebaseui";
 import FirebaseUI from "../../src/index";
 import firebaseConfig from "./firebaseConfig.json";
@@ -54,24 +55,11 @@ export default function Home() {
       <h1>React FirebaseUI Component Demo</h1>
       <FirebaseUI config={UIConfig} />
       {user && (
-        <button
-          className="text-black font-bold text-lg"
-          onClick={() => signOut(auth)}
-        >
-          Sign Out
-        </button>
+        <div>
+          <pre>{JSON.stringify({ user }, null, 2)}</pre>
+          <button onClick={() => signOut(auth)}>Sign Out</button>
+        </div>
       )}
     </main>
   );
 }
-
-// import React from "react";
-
-// export default function App() {
-//   return (
-//     <div>
-//       <h1>React FirebaseUI Component Demo</h1>
-//       <FirebaseUI />
-//     </div>
-//   );
-// }

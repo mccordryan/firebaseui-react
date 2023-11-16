@@ -6,6 +6,7 @@ import EmailLink from "./EmailLink";
 import { getAuth, isSignInWithEmailLink } from "firebase/auth";
 
 export default function FirebaseUI({ config }) {
+  // TODO: why not config.auth?
   const auth = getAuth();
 
   const [emailLinkOpen, setEmailLinkOpen] = useState(
@@ -66,6 +67,7 @@ export default function FirebaseUI({ config }) {
           />
         )}
 
+        {/* TODO: if there's an onClick handler, for accessibility the element should be a button */}
         {alert && (
           <div
             onClick={() => setAlert("")}
@@ -79,7 +81,7 @@ export default function FirebaseUI({ config }) {
             onClick={() => setError("")}
             className="p-1 w-full bg-red-100 border shadow-md border-red-200 rounded-md"
           >
-            <p className="p-1 ">{error}</p>
+            <p className="p-1">{error}</p>
           </div>
         )}
       </div>
