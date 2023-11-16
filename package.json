@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "start": "webpack serve --config webpack.config.dev.js --open",
-    "publish": "npm publish",
+    "publish": "npm run build && npm publish",
     "test": "jest"
   },
   "dependencies": {},
