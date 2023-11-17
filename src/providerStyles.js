@@ -4,7 +4,7 @@ export const providerStyles = {
   "google.com": {
     icon: (
       <svg
-        className="h-5 w-5"
+        style={{ height: '1.25rem', width: '1.25rem' }}
         aria-hidden="true"
         fill="currentColor"
         viewBox="0 0 48 48"
@@ -38,7 +38,7 @@ export const providerStyles = {
   "github.com": {
     icon: (
       <svg
-        className="h-5 w-5"
+        style={{ height: '1.25rem', width: '1.25rem' }}
         aria-hidden="true"
         viewBox="0 0 24 24"
         fill="#FFFFFF"
@@ -55,7 +55,7 @@ export const providerStyles = {
 
   "x.com": {
     icon: (
-      <svg className="h-6 w-6" fill="#FFF" viewBox="0 0 1668.56 1221.19">
+      <svg style={{ height: '1.50rem', width: '1.50rem' }} fill="#FFF" viewBox="0 0 1668.56 1221.19">
         <g id="layer1" transform="translate(52.390088,-25.058597)">
           <path
             id="path1009"
@@ -77,7 +77,7 @@ export const providerStyles = {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 21 21"
-        className="h-5 w-5"
+        style={{ height: '1.25rem', width: '1.25rem' }}
       >
         <path fill="#f35325" d="M0 0h10v10H0z" />
         <path fill="#81bc06" d="M11 0h10v10H11z" />
@@ -94,7 +94,7 @@ export const providerStyles = {
 
   "yahoo.com": {
     icon: (
-      <svg className="h-5 w-5" viewBox="0 0 3386.34 3010.5">
+      <svg style={{ height: '1.25rem', width: '1.25rem' }} viewBox="0 0 3386.34 3010.5">
         <path
           d="M0 732.88h645.84l376.07 962.1 380.96-962.1h628.76l-946.8 2277.62H451.98l259.19-603.53L.02 732.88zm2763.84 768.75h-704.26L2684.65 0l701.69.03-622.5 1501.6zm-519.78 143.72c216.09 0 391.25 175.17 391.25 391.22 0 216.06-175.16 391.23-391.25 391.23-216.06 0-391.19-175.17-391.19-391.23 0-216.05 175.16-391.22 391.19-391.22z"
           fill="#FFFFFF"
@@ -110,7 +110,7 @@ export const providerStyles = {
 
   "apple.com": {
     icon: (
-      <svg fill="#FFFFFF" className="h-5 w-5" viewBox="0 0 22.773 22.773">
+      <svg fill="#FFFFFF" style={{ height: '1.25rem', width: '1.25rem' }} viewBox="0 0 22.773 22.773">
         <g>
           <g>
             <path
@@ -138,7 +138,7 @@ export const providerStyles = {
 
   emaillink: {
     icon: (
-      <svg className="h-5 w-5" viewBox="0 0 256 256" fill="#FFFFFF">
+      <svg style={{ height: '1.25rem', width: '1.25rem' }} viewBox="0 0 256 256" fill="#FFFFFF">
         <g transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
           <path
             d="M 45 51.815 l 45 -33.87 v -1.967 c 0 -2.03 -1.646 -3.676 -3.676 -3.676 H 3.676 C 1.646 12.302 0 13.948 0 15.978 v 1.967 L 45 51.815 z"
@@ -160,7 +160,7 @@ export const providerStyles = {
 
   phonenumber: {
     icon: (
-      <svg className="h-5 w-5" fill="#FFFFFF" viewBox="0 0 24 24">
+      <svg style={{ height: '1.25rem', width: '1.25rem' }} fill="#FFFFFF" viewBox="0 0 24 24">
         <path d="M21.384,17.752a2.108,2.108,0,0,1-.522,3.359,7.543,7.543,0,0,1-5.476.642C10.5,20.523,3.477,13.5,2.247,8.614a7.543,7.543,0,0,1,.642-5.476,2.108,2.108,0,0,1,3.359-.522L8.333,4.7a2.094,2.094,0,0,1,.445,2.328A3.877,3.877,0,0,1,8,8.2c-2.384,2.384,5.417,10.185,7.8,7.8a3.877,3.877,0,0,1,1.173-.781,2.092,2.092,0,0,1,2.328.445Z" />
       </svg>
     ),
@@ -173,7 +173,7 @@ export const providerStyles = {
 
   "facebook.com": {
     icon: (
-      <svg fill="#FFFFFF" className="h-5 w-5" viewBox="0 0 95.333 95.333">
+      <svg fill="#FFFFFF" style={{ height: '1.25rem', width: '1.25rem' }} viewBox="0 0 95.333 95.333">
         <g>
           <path
             d="M93.333,0H2C0.896,0,0,0.896,0,2v91.332c0,1.104,0.896,2,2,2h48.525V63.477H40.284c-0.885,0-1.602-0.717-1.602-1.602
@@ -202,7 +202,7 @@ export const providerStyles = {
 
   anonymous: {
     icon: (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#c2c2c2">
+      <svg style={{ height: '1.25rem', width: '1.25rem' }} viewBox="0 0 24 24" fill="#c2c2c2">
         <path d="M16.5 7.063C16.5 10.258 14.57 13 12 13c-2.572 0-4.5-2.742-4.5-5.938C7.5 3.868 9.16 2 12 2s4.5 1.867 4.5 5.063zM4.102 20.142C4.487 20.6 6.145 22 12 22c5.855 0 7.512-1.4 7.898-1.857a.416.416 0 0 0 .09-.317C19.9 18.944 19.106 15 12 15s-7.9 3.944-7.989 4.826a.416.416 0 0 0 .091.317z" />
       </svg>
     ),

@@ -109,7 +109,9 @@ export default function PhoneNumber({
   const signInWithCode = async function () {
     try {
       console.log("signing in w code");
-      let formattedCode = code.join();
+      let formattedCode = code.join('');
+
+      console.log(formattedCode)
 
       await window.confirmationResult.confirm(formattedCode).then(() => {
         //TODO restructure to get user credential
@@ -137,22 +139,26 @@ export default function PhoneNumber({
 
   return (
     <>
-      <div className="w-full">
+      <div style={{ width: '100%' }}>
         <p
           onClick={() => setSendSMS(false)}
-          className="text-sm text-blue-800 font-semibold"
+          style={{ fontSize: '0.875rem', color: '#2b6cb0', fontWeight: '600' }}
         >
           Go Back
         </p>
       </div>
-      <h1 className="font-semibold text-lg mb-2">
+      <h1 style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
         {enterCode ? "Enter Code Below" : "Send a Sign-In Text"}
       </h1>
 
       {!enterCode && (
-        <form className="flex gap-2">
+        <form style={{ display: 'flex', gap: '0.5rem' }}>
           <select
-            className="py-1 px-2 border border-gray-300 rounded-md"
+            style={{
+              padding: '0.25rem 0.5rem',
+              border: '1px solid #e2e8f0', // gray-300
+              borderRadius: '0.375rem'
+            }}
             value={countryCode}
             onChange={(e) => setCountryCode(e.target.value)}
           >
@@ -165,12 +171,17 @@ export default function PhoneNumber({
           <input
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            style={{
+              border: '1px solid #e2e8f0', // gray-300
+              borderRadius: '0.375rem',
+              padding: '0.5rem 0.75rem',
+              width: '100%'
+            }}
           />
         </form>
       )}
       {enterCode && (
-        <form className="flex gap-2">
+        <form style={{ display: 'flex', gap: '0.5rem' }}>
           {code.map((digit, index) => (
             <input
               key={index}
@@ -180,7 +191,12 @@ export default function PhoneNumber({
               value={digit}
               onChange={(e) => handleCodeChange(e.target.value, index)}
               onKeyDown={(e) => handleBackspace(e, index)}
-              className="border border-gray-300 rounded-md px-3 py-2 w-10"
+              style={{
+                border: '1px solid #e2e8f0', // gray-300
+                borderRadius: '0.375rem',
+                padding: '0.5rem 0.75rem',
+                width: '2.5rem' // Equivalent to w-10
+              }}
             />
           ))}
         </form>
@@ -188,14 +204,25 @@ export default function PhoneNumber({
       <button
         id="sign-in-button"
         onClick={handleButtonPress}
-        className={
-          (phoneNumberValid
-            ? `bg-blue-400 hover:bg-blue-500`
-            : `bg-gray-400 cursor-default `) +
-          ` text-white font-semibold px-3 py-1 mt-5 rounded-lg w-full  duration-150`
-        }
+        style={{
+          color: 'white',
+          fontWeight: '600',
+          marginTop: '1.25rem',
+          width: '100%',
+          transition: 'background-color 150ms',
+          backgroundColor: phoneNumberValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
+          cursor: phoneNumberValid ? 'pointer' : 'default', // cursor changes based on form validity
+          ...(phoneNumberValid ? { ':hover': { backgroundColor: '#3b82f6' } } : {}), // hover effect for valid form
+          display: 'flex',
+          gap: '0.75rem',
+          padding: '0.5rem 0.75rem',
+          borderRadius: '0.375rem',
+          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+          justifyContent: 'center',
+          border: 'none',
+        }}
       >
-        <span className="text-sm font-medium">
+        <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
           {enterCode ? "Finish Signing In" : "Send Text"}
         </span>
       </button>

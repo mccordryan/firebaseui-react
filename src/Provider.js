@@ -87,8 +87,8 @@ export default function Provider({
         providerId == "anonymous"
           ? signInAnonymously(auth)
           : signInFlow == "redirect"
-          ? signInWithRedirect(auth, provider)
-          : signInWithPopup(auth, provider);
+            ? signInWithRedirect(auth, provider)
+            : signInWithPopup(auth, provider);
       try {
         await flowFunction().then((user) => {
           callbacks?.signInSuccessWithAuthResult(user);
@@ -119,12 +119,23 @@ export default function Provider({
     />
   ) : (
     <button
-      className={`flex gap-3 px-3 py-2 rounded-md shadow-md w-full justify-center items-center border border-gray-200`}
-      style={buttonStyles}
+      style={{
+        display: 'flex',
+        gap: '0.75rem',
+        padding: '0.5rem 0.75rem',
+        borderRadius: '0.375rem',
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        border: '1px solid #e5e7eb',
+        cursor: 'pointer',
+        ...buttonStyles
+      }}
       onClick={submit}
     >
       {styles.icon}
-      <span className="text-sm font-medium">
+      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
         {fullLabel ? fullLabel : `Sign in with ${providerName}`}
       </span>
     </button>

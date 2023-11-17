@@ -64,21 +64,50 @@ export default function EmailLink({
 
   return (
     <>
-      <div className="w-full my-2">
-        <p
+      <div style={{ width: '100%', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+        <button
           onClick={() => setEmailLinkOpen(false)}
-          className="text-sm font-semibold text-blue-800"
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            fontSize: '0.875rem',
+            color: '#2b6cb0', // blue-800
+            border: 'none',
+            cursor: 'pointer',
+            backgroundColor: '#fff'
+          }}
         >
           Go Back
-        </p>
+        </button>
       </div>
-      <h1 className="text-lg font-semibold my-2">Sign In With Email Link</h1>
+      <h1 style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem', marginBottom: '0.5rem' }}
+      >Sign In With Email Link</h1>
       {finishEmailSignIn && (
-        <p className="text-sm">Please re-enter your email address</p>
+        <p style={{ fontSize: '0.875rem' }}>Please re-enter your email address</p>
       )}
-      <form className="w-full flex flex-col items-center my-4 gap-4">
-        <div className="text-sm font-medium text-gray-900 flex flex-col gap-2 w-full">
-          <div className="flex justify-between items-center">
+      <form style={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '1rem',
+        marginBottom: '1rem',
+        gap: '1rem'
+      }}>
+        <div style={{
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          color: '#1a202c', // gray-900
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+          width: '100%'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
             <label for="email">Email Address</label>
           </div>
           <input
@@ -88,17 +117,38 @@ export default function EmailLink({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            style={{
+              border: '1px solid #e2e8f0', // gray-300
+              borderRadius: '0.375rem',
+              padding: '0.5rem 0.75rem',
+              width: '100%'
+            }}
+
+
+
+
+
           />
         </div>
         <button
           type="submit"
-          className={
-            (formIsValid
-              ? `bg-blue-400 hover:bg-blue-500`
-              : `bg-gray-400 cursor-default `) +
-            ` text-white font-semibold px-3 py-1 mt-5 rounded-lg w-full  duration-150`
-          }
+          style={{
+            color: 'white',
+            fontWeight: '600',
+            marginTop: '1.25rem',
+            width: '100%',
+            transition: 'background-color 150ms',
+            backgroundColor: formIsValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
+            cursor: formIsValid ? 'pointer' : 'default', // cursor changes based on form validity
+            ...(formIsValid ? { ':hover': { backgroundColor: '#3b82f6' } } : {}), // hover effect for valid form
+            display: 'flex',
+            gap: '0.75rem',
+            padding: '0.5rem 0.75rem',
+            borderRadius: '0.375rem',
+            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            justifyContent: 'center',
+            border: 'none',
+          }}
           onClick={(e) => submit(e)}
         >
           {finishEmailSignIn ? "Finish Signing In" : "Send Email Link"}
