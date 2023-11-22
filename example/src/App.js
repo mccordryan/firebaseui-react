@@ -12,7 +12,7 @@ const auth = getAuth();
 
 export default function Home() {
   const UIConfig = {
-    resetContinueUrl: "http://localhost:8080",
+    continueUrl: "http://localhost:8080",
     // requireVerifyEmail: true,
     callbacks: {
       signInSuccessWithAuthResult: function (user) {

@@ -30,10 +30,6 @@ export default function PhoneNumber({
   const auth = getAuth();
   const phoneAuthProvider = new PhoneAuthProvider(auth);
 
-  useEffect(() => {
-    console.log(mfaResolver)
-  }, [mfaResolver])
-
   const sendMfaText = function () {
     if (mfaSignIn && mfaResolver && window.recaptchaVerifier) {
 
@@ -99,14 +95,6 @@ export default function PhoneNumber({
 
 
   useEffect(() => {
-    console.log(enterCode);
-  }, [enterCode]);
-
-  useEffect(() => {
-    console.log(window.recaptchaVerifier)
-  }, [window.recaptchaVerifier])
-
-  useEffect(() => {
     if (auth) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
         size: "invisible",
@@ -116,14 +104,11 @@ export default function PhoneNumber({
 
   const sendCode = async function () {
     try {
-      console.log("sending code");
       if (!phoneNumber || phoneNumber.length < 12) return;
       const formattedNumber = countryCode + " " + phoneNumber;
       const appVerifier = window.recaptchaVerifier;
-      console.log("rly sending");
       await signInWithPhoneNumber(auth, formattedNumber, appVerifier).then(
         (confirmationResult) => {
-          console.log("sent");
           setAlert(`A code has been sent to ${phoneNumber}.`);
           window.confirmationResult = confirmationResult;
           setEnterCode(true);
@@ -141,10 +126,7 @@ export default function PhoneNumber({
 
   const signInWithCode = async function () {
     try {
-      console.log("signing in w code");
       let formattedCode = code.join('');
-
-      console.log(formattedCode)
 
       await window.confirmationResult.confirm(formattedCode).then(() => {
         //TODO restructure to get user credential
@@ -163,7 +145,6 @@ export default function PhoneNumber({
 
   const handleButtonPress = function () {
     //TODO verify code!
-    console.log("CLICK");
     if (mfaSignIn && enterCode) {
       let formattedCode = code.join('');
       const cred = PhoneAuthProvider.credential(verificationId, formattedCode)

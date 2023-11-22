@@ -17,7 +17,7 @@ export default function EmailPassword({
   authType,
   setAlert,
   setError,
-  resetContinueUrl,
+  continueUrl,
   passwordSpecs,
   setSendSMS,
   setMfaSignIn,
@@ -161,7 +161,8 @@ export default function EmailPassword({
     if (resetPassword) {
       await sendPasswordResetEmail(auth, email, {
         handleCodeInApp: true,
-        url: resetContinueUrl,
+        //url: `${continueUrl}/?resetPassword=true&email=${email}`,
+        url: continueUrl
       }).then(() => {
         setAlert(`A reset-password email has been sent to ${email}.`);
       });

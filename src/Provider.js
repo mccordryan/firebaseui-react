@@ -6,6 +6,7 @@ import {
   OAuthProvider,
   TwitterAuthProvider,
   getAuth,
+  getMultiFactorResolver,
   signInAnonymously,
   signInWithPopup,
   signInWithRedirect,
@@ -26,7 +27,7 @@ export default function Provider({
   callbacks,
   authType,
   customStyles,
-  resetContinueUrl,
+  continueUrl,
   setSendSMS,
   setEmailLinkOpen,
   setAlert,
@@ -97,12 +98,18 @@ export default function Provider({
           callbacks?.signInSuccessWithAuthResult(user);
         });
       } catch (error) {
-        setError(
-          errors[error.code] === ""
-            ? ""
-            : errors[error.code] || "Something went wrong. Try again later.",
-        );
-        callbacks?.signInFailure(error);
+        if (error.code === "auth/multi-factor-auth-required") {
+          setMfaResolver(getMultiFactorResolver(auth, error))
+          setMfaSignIn(true);
+          setSendSMS(true);
+        } else {
+          setError(
+            errors[error.code] === ""
+              ? ""
+              : errors[error.code] || "Something went wrong. Try again later.",
+          );
+          callbacks?.signInFailure(error);
+        }
       }
     }
   };
@@ -115,7 +122,7 @@ export default function Provider({
       auth={auth}
       callbacks={callbacks}
       authType={authType}
-      resetContinueUrl={resetContinueUrl}
+      continueUrl={continueUrl}
       setAlert={setAlert}
       setError={setError}
       passwordSpecs={passwordSpecs}

@@ -5,13 +5,20 @@ import PhoneNumber from "./PhoneNumber";
 import EmailLink from "./EmailLink";
 import { isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
 import VerifyEmail from "./VerifyEmail";
+import ResetPassword from "./ResetPassword";
 
 export default function FirebaseUI({ auth, config }) {
+
+  const queryParams = new URLSearchParams(window.location.search);
+
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
+
+
   const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
   const [mfaSignIn, setMfaSignIn] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
 
@@ -50,8 +57,9 @@ export default function FirebaseUI({ auth, config }) {
           gap: '0.75rem'
         }}
       >
+        {isResetPassword && <ResetPassword callbacks={config?.callbacks} setAlert={setAlert} setError={setError} />}
         {!sendSMS &&
-          !emailLinkOpen && !verify &&
+          !emailLinkOpen && !verify && !isResetPassword &&
           config?.signInOptions?.map((provider, i) => {
             if (typeof provider == "string") {
               return (
@@ -60,7 +68,7 @@ export default function FirebaseUI({ auth, config }) {
                   auth={auth}
                   providerId={provider}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={config?.resetContinueUrl}
+                  continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -79,7 +87,7 @@ export default function FirebaseUI({ auth, config }) {
                   providerId={provider?.provider}
                   {...provider}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={config?.resetContinueUrl}
+                  continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -111,11 +119,13 @@ export default function FirebaseUI({ auth, config }) {
           <EmailLink
             auth={auth}
             setEmailLinkOpen={setEmailLinkOpen}
-            resetContinueUrl={config?.resetContinueUrl}
+            continueUrl={config?.continueUrl}
             setAlert={setAlert}
             setError={setError}
             user={user}
             setMfaSignIn={setMfaSignIn}
+            setMfaResolver={setMfaResolver}
+            setSendSMS={setSendSMS}
           />
         )}
 

@@ -1,5 +1,6 @@
 import {
   getAuth,
+  getMultiFactorResolver,
   isSignInWithEmailLink,
   sendSignInLinkToEmail,
   signInWithEmailLink,
@@ -9,11 +10,15 @@ import { errors } from "./Errors";
 
 export default function EmailLink({
   setEmailLinkOpen,
-  resetContinueUrl,
+  continueUrl,
   callbacks,
   setAlert,
   setError,
+  setMfaResolver,
+  setSendSMS,
+  setMfaSignIn
 }) {
+
   const auth = getAuth();
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -26,6 +31,46 @@ export default function EmailLink({
   useEffect(() => {
     setFormIsValid(isEmailValid());
   }, [email]);
+
+  useEffect(() => {
+    if (auth && finishEmailSignIn && !isSigningIn) {
+      isSigningIn = true;
+      finishSignUp()
+    }
+
+    let isSigningIn = false;
+
+    async function finishSignUp() {
+      const queryParams = new URLSearchParams(window.location.search);
+      const queryEmail = queryParams.get('email');
+
+      try {
+        await signInWithEmailLink(auth, queryEmail, window.location.href).then(
+          (user) => {
+            if (callbacks?.signInSuccessWithAuthResult)
+              callbacks.signInSuccessWithAuthResult(user);
+            setEmailLinkOpen(false);
+          },
+        );
+      } catch (error) {
+        if (error.code === "auth/multi-factor-auth-required") {
+          setMfaResolver(getMultiFactorResolver(auth, error))
+          setMfaSignIn(true);
+          setEmailLinkOpen(false);
+          setSendSMS(true);
+        } else {
+          if (finishEmailSignIn && callbacks?.signInFailure)
+            callbacks.signInFailure(error);
+          setError(
+            errors[error.code] === ""
+              ? ""
+              : errors[error.code] || "Something went wrong. Try again later.",
+          );
+          throw new Error(error);
+        }
+      }
+    }
+  }, [finishEmailSignIn, auth])
 
   const isEmailValid = function () {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,7 +91,7 @@ export default function EmailLink({
       } else {
         await sendSignInLinkToEmail(auth, email, {
           handleCodeInApp: true,
-          url: resetContinueUrl,
+          url: `${continueUrl}/?email=${email}`,
         }).then(() => {
           setAlert(`A sign in link has been sent to ${email}`);
         });
@@ -83,9 +128,9 @@ export default function EmailLink({
       <h1 style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem', marginBottom: '0.5rem' }}
       >Sign In With Email Link</h1>
       {finishEmailSignIn && (
-        <p style={{ fontSize: '0.875rem' }}>Please re-enter your email address</p>
+        <p style={{ fontSize: '0.875rem' }}>Signing you in...</p>
       )}
-      <form style={{
+      {!finishEmailSignIn && <form style={{
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -153,7 +198,7 @@ export default function EmailLink({
         >
           {finishEmailSignIn ? "Finish Signing In" : "Send Email Link"}
         </button>
-      </form>
+      </form>}
     </>
   );
 }
