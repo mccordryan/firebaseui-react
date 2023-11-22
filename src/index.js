@@ -1,17 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Provider from "./Provider";
 import { providerStyles } from "./providerStyles";
 import PhoneNumber from "./PhoneNumber";
 import EmailLink from "./EmailLink";
-import { isSignInWithEmailLink } from "firebase/auth";
+import { isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
+import VerifyEmail from "./VerifyEmail";
 
 export default function FirebaseUI({ auth, config }) {
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
   const [sendSMS, setSendSMS] = useState(false);
+  const [verify, setVerify] = useState(false);
+  const [mfaSignIn, setMfaSignIn] = useState(false);
+  const [mfaResolver, setMfaResolver] = useState();
+
   const [alert, setAlert] = useState("");
   const [error, setError] = useState("");
+  const [user, setUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
+
+  useEffect(() => {
+    //open the email verification for signed in but unverified users.
+    if (config?.requireVerifyEmail && user && user.providerData[0].providerId == "password" && !user?.emailVerified) {
+      setVerify(true);
+    }
+  }, [user])
 
   return (
     <>
@@ -30,7 +51,7 @@ export default function FirebaseUI({ auth, config }) {
         }}
       >
         {!sendSMS &&
-          !emailLinkOpen &&
+          !emailLinkOpen && !verify &&
           config?.signInOptions?.map((provider, i) => {
             if (typeof provider == "string") {
               return (
@@ -44,6 +65,10 @@ export default function FirebaseUI({ auth, config }) {
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
                   setError={setError}
+                  user={user}
+                  setVerify={setVerify}
+                  setMfaSignIn={setMfaSignIn}
+                  setMfaResolver={setMfaResolver}
                 />
               );
             } else if (typeof provider == "object") {
@@ -59,17 +84,28 @@ export default function FirebaseUI({ auth, config }) {
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
                   setError={setError}
+                  user={user}
+                  setVerify={setVerify}
+                  setMfaSignIn={setMfaSignIn}
+                  setMfaResolver={setMfaResolver}
                 />
               );
             }
           })}
         {sendSMS && (
           <PhoneNumber
+            callbacks={config?.callbacks}
             auth={auth}
             setSendSMS={setSendSMS}
             setAlert={setAlert}
             setError={setError}
+            user={user}
+            mfaSignIn={mfaSignIn}
+            mfaResolver={mfaResolver}
           />
+        )}
+        {verify && (
+          <VerifyEmail user={user} setAlert={setAlert} setError={setError} setSendSMS={setSendSMS} />
         )}
         {emailLinkOpen && (
           <EmailLink
@@ -78,6 +114,8 @@ export default function FirebaseUI({ auth, config }) {
             resetContinueUrl={config?.resetContinueUrl}
             setAlert={setAlert}
             setError={setError}
+            user={user}
+            setMfaSignIn={setMfaSignIn}
           />
         )}
 

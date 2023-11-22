@@ -3,6 +3,8 @@
 import React from "react";
 import {
   createUserWithEmailAndPassword,
+  getMultiFactorResolver,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -17,6 +19,9 @@ export default function EmailPassword({
   setError,
   resetContinueUrl,
   passwordSpecs,
+  setSendSMS,
+  setMfaSignIn,
+  setMfaResolver
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,33 +79,42 @@ export default function EmailPassword({
     if (authType == "both") {
       try {
         await signInWithEmailAndPassword(auth, email, password).then((user) => {
-          if (callbacks?.signInSuccessWithAuthResult)
+          if (callbacks?.signInSuccessWithAuthResult) {
             callbacks.signInSuccessWithAuthResult(user);
+          }
         });
       } catch (signInError) {
         try {
           await createUserWithEmailAndPassword(auth, email, password).then(
             (user) => {
-              if (callbacks?.signInSuccessWithAuthResult)
+              if (callbacks?.signInSuccessWithAuthResult) {
                 callbacks.signInSuccessWithAuthResult(user);
+              }
             },
           );
         } catch (signUpError) {
           if (signUpError.code === "auth/email-already-in-use") {
-            setError(
-              errors[signInError.code] === ""
-                ? ""
-                : errors[signInError.code] ||
-                "Something went wrong. Try again later.",
-            );
-            if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
-            throw new Error(signInError.code);
-          } else {
-            setError(
-              errors[signUpError.code] === ""
-                ? ""
-                : errors[signUpError.code] ||
-                "Something went wrong. Try again later.",
+            //SIGN IN PROBLEM
+            if (signInError.code === "auth/multi-factor-auth-required") {
+              setMfaResolver(getMultiFactorResolver(auth, signInError))
+              setMfaSignIn(true);
+              setSendSMS(true);
+            } else {
+              setError(
+                errors[signInError.code] === ""
+                  ? ""
+                  : errors[signInError.code] ||
+                  "Something went wrong. Try again later.",
+              );
+              if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
+              throw new Error(signInError.code);
+            }
+          } else if (signUpError.code) {
+
+            setError(errors[signUpError.code] === ""
+              ? ""
+              : errors[signUpError.code] ||
+              "Something went wrong. Try again later.",
             );
             if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError);
             throw new Error(signUpError.code);
@@ -114,8 +128,9 @@ export default function EmailPassword({
           : createUserWithEmailAndPassword(auth, email, password);
       try {
         await authFunction().then((user) => {
-          if (callbacks?.signInSuccessWithAuthResult)
+          if (callbacks?.signInSuccessWithAuthResult) {
             callbacks.signInSuccessWithAuthResult(user);
+          }
         });
       } catch (error) {
         setError(

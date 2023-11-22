@@ -1,4 +1,6 @@
 import {
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   RecaptchaVerifier,
   getAuth,
   signInWithPhoneNumber,
@@ -12,6 +14,8 @@ export default function PhoneNumber({
   setAlert,
   setError,
   callbacks,
+  mfaSignIn,
+  mfaResolver
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -21,6 +25,32 @@ export default function PhoneNumber({
   const [enterCode, setEnterCode] = useState(false);
   const [code, setCode] = useState(Array(6).fill(""));
   const [countryCode, setCountryCode] = useState("+1");
+  const [verificationId, setVerificationId] = useState();
+
+  const auth = getAuth();
+  const phoneAuthProvider = new PhoneAuthProvider(auth);
+
+  useEffect(() => {
+    console.log(mfaResolver)
+  }, [mfaResolver])
+
+  const sendMfaText = function () {
+    if (mfaSignIn && mfaResolver && window.recaptchaVerifier) {
+
+      const phoneInfoOptions = {
+        multiFactorHint: mfaResolver.hints[0],
+        session: mfaResolver.session
+      }
+      try {
+        phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, window.recaptchaVerifier).then((vId) => {
+          setVerificationId(vId);
+          setEnterCode(true);
+        })
+      } catch (error) {
+        window.recaptchaVerifier.clear();
+      }
+    }
+  }
 
   const inputRefs = Array(6)
     .fill()
@@ -67,15 +97,18 @@ export default function PhoneNumber({
     return parts.join("-");
   };
 
-  const auth = getAuth();
 
   useEffect(() => {
     console.log(enterCode);
   }, [enterCode]);
+
+  useEffect(() => {
+    console.log(window.recaptchaVerifier)
+  }, [window.recaptchaVerifier])
+
   useEffect(() => {
     if (auth) {
-      console.log("good auth");
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
         size: "invisible",
       });
     }
@@ -129,29 +162,52 @@ export default function PhoneNumber({
   };
 
   const handleButtonPress = function () {
+    //TODO verify code!
     console.log("CLICK");
-    if (enterCode) {
-      signInWithCode();
+    if (mfaSignIn && enterCode) {
+      let formattedCode = code.join('');
+      const cred = PhoneAuthProvider.credential(verificationId, formattedCode)
+      const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+      try {
+        mfaResolver.resolveSignIn(multiFactorAssertion).then((userCred) => {
+          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred.user);
+        })
+      } catch (error) {
+        console.error(error);
+        setError(
+          errors[error.code] === ""
+            ? ""
+            : errors[error.code] || "Something went wrong. Try again later.",
+        );
+        if (callbacks?.signInFailure) callbacks.signInFailure(error);
+      }
+    } else if (mfaSignIn) {
+      sendMfaText();
     } else {
-      sendCode();
+      if (enterCode) {
+        signInWithCode();
+      } else {
+        sendCode();
+      }
     }
+
   };
 
   return (
     <>
       <div style={{ width: '100%' }}>
-        <p
+        {!(mfaSignIn && enterCode) && <p
           onClick={() => setSendSMS(false)}
           style={{ fontSize: '0.875rem', color: '#2b6cb0', fontWeight: '600' }}
         >
           Go Back
-        </p>
+        </p>}
       </div>
       <h1 style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
-        {enterCode ? "Enter Code Below" : "Send a Sign-In Text"}
+        {enterCode ? "Enter Code Below" : mfaSignIn ? "You'll need to verify your identity to continue" : "Send a Sign-In Text"}
       </h1>
 
-      {!enterCode && (
+      {!enterCode && !mfaSignIn && (
         <form style={{ display: 'flex', gap: '0.5rem' }}>
           <select
             style={{
@@ -180,6 +236,10 @@ export default function PhoneNumber({
           />
         </form>
       )}
+
+      {!enterCode && mfaSignIn && <div>
+        <p>A confirmation text will be sent to your phone number ending in {mfaResolver?.hints[0]?.phoneNumber?.slice(-4)}</p>
+      </div>}
       {enterCode && (
         <form style={{ display: 'flex', gap: '0.5rem' }}>
           {code.map((digit, index) => (

@@ -32,6 +32,9 @@ export default function Provider({
   setAlert,
   setError,
   passwordSpecs,
+  setVerify,
+  setMfaSignIn,
+  setMfaResolver
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -116,6 +119,10 @@ export default function Provider({
       setAlert={setAlert}
       setError={setError}
       passwordSpecs={passwordSpecs}
+      setSendSMS={setSendSMS}
+      setMfaSignIn={setMfaSignIn}
+      setVerify={setVerify}
+      setMfaResolver={setMfaResolver}
     />
   ) : (
     <button
