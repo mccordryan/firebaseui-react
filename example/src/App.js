@@ -24,7 +24,10 @@ export default function Home() {
       },
     },
     signInOptions: [
-      { provider: "emailpassword" },
+      {
+        provider: "emailpassword",
+        passwordSpecs: { containsUppercase: true, containsLowercase: true, containsSpecialCharacter: true, containsNumber: true }
+      },
       {
         provider: "google.com",
         customParameters: { prompt: "select_account" },

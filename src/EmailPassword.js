@@ -224,7 +224,7 @@ export default function EmailPassword({
           style={{
             border: '1px solid #e2e8f0', // gray-300
             borderRadius: '0.375rem',
-            padding: '0.5rem 0.75rem',
+            padding: '0.5rem 0.25rem',
             width: '100%'
           }}
         />
@@ -268,38 +268,49 @@ export default function EmailPassword({
               style={{
                 border: '1px solid #e2e8f0', // gray-300
                 borderRadius: '0.375rem',
-                padding: '0.5rem 0.75rem',
+                padding: '0.5rem 0.25rem',
                 width: '100%'
               }}
             />
             {showPassHelper && (
-              <div style={{
-                width: '20%',
-                padding: '0.5rem',
-                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                borderRadius: '0.375rem',
-                position: 'absolute',
-                backgroundColor: 'white'
-              }}>
-                <p>Your password must contain:</p>
-                <ul>
-                  {password.length < (passwordSpecs?.minCharacters || 6) && (
-                    <li>
-                      - At least {passwordSpecs?.minCharacters || 6} characters
-                    </li>
+              <div style={{ marginTop: '0.25rem', width: '100%' }}>
+
+                {password.length < (passwordSpecs?.minCharacters || 6) && (
+                  <p style={{
+                    margin: '0.25rem 0rem',
+                    color: '#FF0000',
+                    textAlign: 'right'
+                  }}>
+                    {passwordSpecs?.minCharacters || 6} character minimum
+                  </p>
+                )}
+                {passwordSpecs?.containsUppercase &&
+                  !/[A-Z]/.test(password) && <p style={{
+                    margin: '0.25rem 0rem',
+                    color: '#FF0000',
+                    textAlign: 'right'
+                  }}>1 uppercase character</p>}
+                {passwordSpecs?.containsLowercase &&
+                  !/[a-z]/.test(password) && <p style={{
+                    margin: '0.25rem 0rem',
+                    color: '#FF0000',
+                    textAlign: 'right'
+                  }}>1 lowercase character</p>}
+                {passwordSpecs?.containsNumber && !/\d/.test(password) && (
+                  <p style={{
+                    margin: '0.25rem 0rem',
+                    color: '#FF0000',
+                    textAlign: 'right'
+                  }}>1 number</p>
+                )}
+                {passwordSpecs?.containsSpecialCharacter &&
+                  !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && (
+                    <p style={{
+                      margin: '0.25rem 0rem',
+                      color: '#FF0000',
+                      textAlign: 'right'
+                    }}>1 special character</p>
                   )}
-                  {passwordSpecs?.containsUppercase &&
-                    !/[A-Z]/.test(password) && <li>- 1 uppercase character</li>}
-                  {passwordSpecs?.containsLowercase &&
-                    !/[a-z]/.test(password) && <li>- 1 lowercase character</li>}
-                  {passwordSpecs?.containsNumber && !/\d/.test(password) && (
-                    <li>- 1 number</li>
-                  )}
-                  {passwordSpecs?.containsSpecialCharacter &&
-                    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && (
-                      <li>- 1 special character</li>
-                    )}
-                </ul>
               </div>
             )}
           </div>
