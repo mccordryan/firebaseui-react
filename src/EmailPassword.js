@@ -181,22 +181,7 @@ export default function EmailPassword({
       marginBottom: '1rem',
       gap: '1rem'
     }}>
-      {resetPassword && (
-        <button
-          onClick={() => setResetPassword(false)}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            fontSize: '0.875rem',
-            color: '#2b6cb0', // blue-800
-            border: 'none',
-            cursor: 'pointer',
-            backgroundColor: '#fff'
-          }}
-        >
-          Go back
-        </button>
-      )}
+
       <div style={{
         fontSize: '0.875rem',
         fontWeight: '500',
@@ -211,7 +196,20 @@ export default function EmailPassword({
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
+
           <label htmlFor="email">Email Address</label>
+          {resetPassword && <button
+            onClick={() => setResetPassword(false)}
+            style={{
+              fontSize: '0.875rem',
+              color: '#2b6cb0',
+              border: 'none',
+              backgroundColor: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>}
         </div>
         <input
           data-testid="emailinput"
@@ -339,6 +337,8 @@ export default function EmailPassword({
       >
         {resetPassword ? "Reset Password" : "Sign In With Email"}
       </button>
+
+
     </form>
   );
 }

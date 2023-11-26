@@ -109,22 +109,6 @@ export default function EmailLink({
 
   return (
     <>
-      <div style={{ width: '100%', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
-        <button
-          onClick={() => setEmailLinkOpen(false)}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            fontSize: '0.875rem',
-            color: '#2b6cb0', // blue-800
-            border: 'none',
-            cursor: 'pointer',
-            backgroundColor: '#fff'
-          }}
-        >
-          Go Back
-        </button>
-      </div>
       <h1 style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem', marginBottom: '0.5rem' }}
       >Sign In With Email Link</h1>
       {finishEmailSignIn && (
@@ -154,6 +138,18 @@ export default function EmailLink({
             alignItems: 'center'
           }}>
             <label for="email">Email Address</label>
+            <button
+              onClick={() => setEmailLinkOpen(false)}
+              style={{
+                fontSize: '0.875rem',
+                color: '#2b6cb0',
+                border: 'none',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
           </div>
           <input
             ref={emailRef}

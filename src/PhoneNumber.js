@@ -22,7 +22,7 @@ export default function PhoneNumber({
   const [phoneNumber, setPhoneNumber] = useState();
   //TODO phone number validity
   const [phoneNumberValid, setPhoneNumberValid] = useState(true);
-  const [enterCode, setEnterCode] = useState(false);
+  const [enterCode, setEnterCode] = useState(true);
   const [code, setCode] = useState(Array(6).fill(""));
   const [countryCode, setCountryCode] = useState("+1");
   const [verificationId, setVerificationId] = useState();
@@ -176,45 +176,63 @@ export default function PhoneNumber({
 
   return (
     <>
-      <div style={{ width: '100%' }}>
-        {!(mfaSignIn && enterCode) && <p
-          onClick={() => setSendSMS(false)}
-          style={{ fontSize: '0.875rem', color: '#2b6cb0', fontWeight: '600' }}
-        >
-          Go Back
-        </p>}
-      </div>
       <h1 style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
         {enterCode ? "Enter Code Below" : mfaSignIn ? "You'll need to verify your identity to continue" : "Send a Sign-In Text"}
       </h1>
 
       {!enterCode && !mfaSignIn && (
-        <form style={{ display: 'flex', gap: '0.5rem' }}>
-          <select
-            style={{
-              padding: '0.25rem 0.5rem',
-              border: '1px solid #e2e8f0', // gray-300
-              borderRadius: '0.375rem'
-            }}
-            value={countryCode}
-            onChange={(e) => setCountryCode(e.target.value)}
-          >
-            <option value="+1">+1</option>
-            <option value="+44">+44</option>
-            <option value="+52">+52</option>
-            <option value="+91">+91</option>
-            <option value="+86">+86</option>
-          </select>
-          <input
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
-            style={{
-              border: '1px solid #e2e8f0', // gray-300
-              borderRadius: '0.375rem',
-              padding: '0.5rem 0.75rem',
-              width: '100%'
-            }}
-          />
+        <form style={{ width: '80%' }}>
+
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            marginBottom: '0.75rem'
+          }}>
+            <button
+              onClick={() => setSendSMS(false)}
+              style={{
+                fontSize: '0.875rem',
+                color: '#2b6cb0',
+                border: 'none',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+                textAlign: 'right',
+                width: '100%'
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <select
+              style={{
+                padding: '0.25rem 0.5rem',
+                border: '1px solid #e2e8f0', // gray-300
+                borderRadius: '0.375rem'
+              }}
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+            >
+              <option value="+1">+1</option>
+              <option value="+44">+44</option>
+              <option value="+52">+52</option>
+              <option value="+91">+91</option>
+              <option value="+86">+86</option>
+            </select>
+            <input
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
+              placeholder="Phone Number"
+              style={{
+                border: '1px solid #e2e8f0', // gray-300
+                borderRadius: '0.375rem',
+                padding: '0.5rem 0.75rem',
+                width: '100%'
+              }}
+            />
+          </div>
         </form>
       )}
 
@@ -222,25 +240,41 @@ export default function PhoneNumber({
         <p>A confirmation text will be sent to your phone number ending in {mfaResolver?.hints[0]?.phoneNumber?.slice(-4)}</p>
       </div>}
       {enterCode && (
-        <form style={{ display: 'flex', gap: '0.5rem' }}>
-          {code.map((digit, index) => (
-            <input
-              key={index}
-              ref={inputRefs[index]}
-              type="text"
-              maxLength="1"
-              value={digit}
-              onChange={(e) => handleCodeChange(e.target.value, index)}
-              onKeyDown={(e) => handleBackspace(e, index)}
+        <>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'end' }}>
+            <button
+              onClick={() => setSendSMS(false)}
               style={{
-                border: '1px solid #e2e8f0', // gray-300
-                borderRadius: '0.375rem',
-                padding: '0.5rem 0.75rem',
-                width: '2.5rem' // Equivalent to w-10
+                fontSize: '0.875rem',
+                color: '#2b6cb0',
+                border: 'none',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
               }}
-            />
-          ))}
-        </form>
+            >
+              Cancel
+            </button>
+          </div>
+          <form style={{ display: 'flex', gap: '0.5rem' }}>
+            {code.map((digit, index) => (
+              <input
+                key={index}
+                ref={inputRefs[index]}
+                type="text"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleCodeChange(e.target.value, index)}
+                onKeyDown={(e) => handleBackspace(e, index)}
+                style={{
+                  border: '1px solid #e2e8f0', // gray-300
+                  borderRadius: '0.375rem',
+                  padding: '0.5rem 0.75rem',
+                  width: '2.5rem' // Equivalent to w-10
+                }}
+              />
+            ))}
+          </form>
+        </>
       )}
       <button
         id="sign-in-button"
