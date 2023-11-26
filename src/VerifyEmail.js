@@ -1,5 +1,5 @@
 import React from "react";
-import { getAuth, sendEmailVerification } from "firebase/auth"
+import { sendEmailVerification } from "firebase/auth"
 import { useEffect, useState } from "react";
 
 export default function VerifyEmail({ user, setAlert }) {

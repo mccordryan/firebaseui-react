@@ -2,7 +2,6 @@ import {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   RecaptchaVerifier,
-  getAuth,
   signInWithPhoneNumber,
 } from "firebase/auth";
 import { providerStyles } from "./providerStyles";
@@ -15,19 +14,19 @@ export default function PhoneNumber({
   setError,
   callbacks,
   mfaSignIn,
-  mfaResolver
+  mfaResolver,
+  auth
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
   const [phoneNumber, setPhoneNumber] = useState();
   //TODO phone number validity
   const [phoneNumberValid, setPhoneNumberValid] = useState(true);
-  const [enterCode, setEnterCode] = useState(true);
+  const [enterCode, setEnterCode] = useState(false);
   const [code, setCode] = useState(Array(6).fill(""));
   const [countryCode, setCountryCode] = useState("+1");
   const [verificationId, setVerificationId] = useState();
 
-  const auth = getAuth();
   const phoneAuthProvider = new PhoneAuthProvider(auth);
 
   const sendMfaText = function () {
@@ -181,57 +180,171 @@ export default function PhoneNumber({
       </h1>
 
       {!enterCode && !mfaSignIn && (
-        <form style={{ width: '80%' }}>
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            marginBottom: '0.75rem'
-          }}>
-            <button
-              onClick={() => setSendSMS(false)}
-              style={{
+        <form style={{ width: '80%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+            }}>
+              <label style={{
                 fontSize: '0.875rem',
-                color: '#2b6cb0',
-                border: 'none',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
-                textAlign: 'right',
-                width: '100%'
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <select
-              style={{
-                padding: '0.25rem 0.5rem',
-                border: '1px solid #e2e8f0', // gray-300
-                borderRadius: '0.375rem'
-              }}
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value)}
-            >
-              <option value="+1">+1</option>
-              <option value="+44">+44</option>
-              <option value="+52">+52</option>
-              <option value="+91">+91</option>
-              <option value="+86">+86</option>
+                fontWeight: '500',
+                color: '#1a202c',
+              }}>Country Code</label>
+              <button
+                onClick={() => setSendSMS(false)}
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#2b6cb0',
+                  border: 'none',
+                  backgroundColor: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+            <select autocomplete="tel-country-code" name="countrycode" id="countrycode" style={{
+              border: '1px solid #e2e8f0', // gray-300
+              borderRadius: '0.375rem',
+              padding: '0.5rem 0.75rem',
+              width: '100%'
+            }} value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}>
+              <option value="+1">🇺🇸 United States +1</option>
+              <option value="+358">🇦🇽 Aland Islands +358</option>
+              <option value="+213">🇩🇿 Algeria +213</option>
+              <option value="+244">🇦🇴 Angola +244</option>
+              <option value="+1264">🇦🇮 Anguilla +1264</option>
+              <option value="+61">🇦🇺 Australia +61</option>
+              <option value="+43">🇦🇹 Austria +43</option>
+              <option value="+1">🇧🇸 Bahamas +1</option>
+              <option value="+973">🇧🇭 Bahrain +973</option>
+              <option value="+880">🇧🇩 Bangladesh +880</option>
+              <option value="+375">🇧🇾 Belarus +375</option>
+              <option value="+32">🇧🇪 Belgium +32</option>
+              <option value="+229">🇧🇯 Benin +229</option>
+              <option value="+591">🇧🇴 Bolivia +591</option>
+              <option value="+387">🇧🇦 Bosnia and Herzegovina +387</option>
+              <option value="+673">🇧🇳 Brunei +673</option>
+              <option value="+359">🇧🇬 Bulgaria +359</option>
+              <option value="+257">🇧🇮 Burundi +257</option>
+              <option value="+855">🇰🇭 Cambodia +855</option>
+              <option value="+1">🇨🇦 Canada +1</option>
+              <option value="+238">🇨🇻 Cape Verde +238</option>
+              <option value="+1345">🇰🇾 Cayman Islands +1345</option>
+              <option value="+61">🇨🇽 Christmas Island +61</option>
+              <option value="+61">🇨🇨 Cocos +61</option>
+              <option value="+243">🇨🇩 Congo, Dem Rep +243</option>
+              <option value="+385">🇭🇷 Croatia +385</option>
+              <option value="+357">🇨🇾 Cyprus +357</option>
+              <option value="+420">🇨🇿 Czech Republic +420</option>
+              <option value="+45">🇩🇰 Denmark +45</option>
+              <option value="+1767">🇩🇲 Dominica +1767</option>
+              <option value="+1">🇩🇴 Dominican Republic +1</option>
+              <option value="+593">🇪🇨 Ecuador +593</option>
+              <option value="+240">🇬🇶 Equatorial Guinea +240</option>
+              <option value="+372">🇪🇪 Estonia +372</option>
+              <option value="+358">🇫🇮 Finland/Aland Islands +358</option>
+              <option value="+33">🇫🇷 France +33</option>
+              <option value="+220">🇬🇲 Gambia +220</option>
+              <option value="+995">🇬🇪 Georgia +995</option>
+              <option value="+49">🇩🇪 Germany +49</option>
+              <option value="+233">🇬🇭 Ghana +233</option>
+              <option value="+350">🇬🇮 Gibraltar +350</option>
+              <option value="+30">🇬🇷 Greece +30</option>
+              <option value="+502">🇬🇹 Guatemala +502</option>
+              <option value="+592">🇬🇾 Guyana +592</option>
+              <option value="+36">🇭🇺 Hungary +36</option>
+              <option value="+354">🇮🇸 Iceland +354</option>
+              <option value="+62">🇮🇩 Indonesia +62</option>
+              <option value="+91">🇮🇳 India +91</option>
+              <option value="+353">🇮🇪 Ireland +353</option>
+              <option value="+972">🇮🇱 Israel +972</option>
+              <option value="+39">🇮🇹 Italy +39</option>
+              <option value="+225">🇨🇮 Ivory Coast +225</option>
+              <option value="+1876">🇯🇲 Jamaica +1876</option>
+              <option value="+81">🇯🇵 Japan +81</option>
+              <option value="+962">🇯🇴 Jordan +962</option>
+              <option value="+7">🇰🇿 Kazakhstan +7</option>
+              <option value="+965">🇰🇼 Kuwait +965</option>
+              <option value="+371">🇱🇻 Latvia +371</option>
+              <option value="+218">🇱🇾 Libya +218</option>
+              <option value="+423">🇱🇮 Liechtenstein +423</option>
+              <option value="+370">🇱🇹 Lithuania +370</option>
+              <option value="+352">🇱🇺 Luxembourg +352</option>
+              <option value="+261">🇲🇬 Madagascar +261</option>
+              <option value="+265">🇲🇼 Malawi +265</option>
+              <option value="+60">🇲🇾 Malaysia +60</option>
+              <option value="+960">🇲🇻 Maldives +960</option>
+              <option value="+223">🇲🇱 Mali +223</option>
+              <option value="+356">🇲🇹 Malta +356</option>
+              <option value="+230">🇲🇺 Mauritius +230</option>
+              <option value="+52">🇲🇽 Mexico +52</option>
+              <option value="+377">🇲🇨 Monaco +377</option>
+              <option value="+382">🇲🇪 Montenegro +382</option>
+              <option value="+1664">🇲🇸 Montserrat +1664</option>
+              <option value="+258">🇲🇿 Mozambique +258</option>
+              <option value="+264">🇳🇦 Namibia +264</option>
+              <option value="+31">🇳🇱 Netherlands +31</option>
+              <option value="+599">🇳🇱 Netherlands Antilles +599</option>
+              <option value="+64">🇳🇿 New Zealand +64</option>
+              <option value="+234">🇳🇬 Nigeria +234</option>
+              <option value="+47">🇳🇴 Norway +47</option>
+              <option value="+63">🇵🇭 Philippines +63</option>
+              <option value="+48">🇵🇱 Poland +48</option>
+              <option value="+351">🇵🇹 Portugal +351</option>
+              <option value="+974">🇶🇦 Qatar +974</option>
+              <option value="+40">🇷🇴 Romania +40</option>
+              <option value="+250">🇷🇼 Rwanda +250</option>
+              <option value="+221">🇸🇳 Senegal +221</option>
+              <option value="+381">🇷🇸 Serbia +381</option>
+              <option value="+248">🇸🇨 Seychelles +248</option>
+              <option value="+65">🇸🇬 Singapore +65</option>
+              <option value="+421">🇸🇰 Slovakia +421</option>
+              <option value="+386">🇸🇮 Slovenia +386</option>
+              <option value="+27">🇿🇦 South Africa +27</option>
+              <option value="+82">🇰🇷 South Korea +82</option>
+              <option value="+34">🇪🇸 Spain +34</option>
+              <option value="+94">🇱🇰 Sri Lanka +94</option>
+              <option value="+1758">🇱🇨 St Lucia +1758</option>
+              <option value="+249">🇸🇩 Sudan +249</option>
+              <option value="+46">🇸🇪 Sweden +46</option>
+              <option value="+41">🇨🇭 Switzerland +41</option>
+              <option value="+886">🇹🇼 Taiwan +886</option>
+              <option value="+255">🇹🇿 Tanzania +255</option>
+              <option value="+228">🇹🇬 Togo +228</option>
+              <option value="+1868">🇹🇹 Trinidad and Tobago +1868</option>
+              <option value="+1649">🇹🇨 Turks and Caicos Islands +1649</option>
+              <option value="+256">🇺🇬 Uganda +256</option>
+              <option value="+971">🇦🇪 United Arab Emirates +971</option>
+              <option value="+44">🇬🇧 United Kingdom +44</option>
+              <option value="+1">🇺🇸 United States +1</option>
+              <option value="+998">🇺🇿 Uzbekistan +998</option>
+              <option value="+58">🇻🇪 Venezuela +58</option>
             </select>
-            <input
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
-              placeholder="Phone Number"
-              style={{
-                border: '1px solid #e2e8f0', // gray-300
-                borderRadius: '0.375rem',
-                padding: '0.5rem 0.75rem',
-                width: '100%'
-              }}
-            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <label style={{
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: '#1a202c',
+            }}>Phone Number</label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
+                placeholder="Phone Number"
+                style={{
+                  border: '1px solid #e2e8f0', // gray-300
+                  borderRadius: '0.375rem',
+                  padding: '0.5rem 0.75rem',
+                  width: '100%'
+                }}
+              />
+            </div>
           </div>
         </form>
       )}

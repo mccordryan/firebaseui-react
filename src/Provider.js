@@ -5,7 +5,6 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   TwitterAuthProvider,
-  getAuth,
   getMultiFactorResolver,
   signInAnonymously,
   signInWithPopup,

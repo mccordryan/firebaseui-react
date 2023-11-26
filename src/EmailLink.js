@@ -1,5 +1,4 @@
 import {
-  getAuth,
   getMultiFactorResolver,
   isSignInWithEmailLink,
   sendSignInLinkToEmail,
@@ -16,10 +15,9 @@ export default function EmailLink({
   setError,
   setMfaResolver,
   setSendSMS,
-  setMfaSignIn
+  setMfaSignIn,
+  auth
 }) {
-
-  const auth = getAuth();
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
   const [finishEmailSignIn, setFinishEmailSignIn] = useState(

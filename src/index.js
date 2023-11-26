@@ -16,7 +16,7 @@ export default function FirebaseUI({ auth, config }) {
   );
 
 
-  const [sendSMS, setSendSMS] = useState(true);
+  const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
   const [mfaSignIn, setMfaSignIn] = useState(false);
