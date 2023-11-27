@@ -271,7 +271,7 @@ export default function EmailPassword({
             alignItems: 'center'
           }}>
             <label htmlFor="password">Password<span style={{ color: "#FF0000" }}> *</span></label>
-            <button
+            {continueUrl && <button
               onClick={() => setResetPassword(true)}
               style={{
                 fontSize: '0.875rem',
@@ -282,7 +282,7 @@ export default function EmailPassword({
               }}
             >
               Forgot Password?
-            </button>
+            </button>}
           </div>
           <div>
             <input
