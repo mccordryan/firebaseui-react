@@ -15,10 +15,15 @@ export default function FirebaseUI({ auth, config }) {
     isSignInWithEmailLink(auth, window.location.href),
   );
 
+  useEffect(() => {
+    console.log(sendSMS)
+  }, [sendSMS])
+
 
   const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
   const [mfaSignIn, setMfaSignIn] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
 
@@ -57,9 +62,9 @@ export default function FirebaseUI({ auth, config }) {
           gap: '0.75rem'
         }}
       >
-        {isResetPassword && <ResetPassword callbacks={config?.callbacks} setAlert={setAlert} setError={setError} />}
+        {resetPasswordOpen && <ResetPassword callbacks={config?.callbacks} setAlert={setAlert} setError={setError} auth={auth} passwordSpecs={config?.passwordSpecs} />}
         {!sendSMS &&
-          !emailLinkOpen && !verify && !isResetPassword &&
+          !emailLinkOpen && !verify && !resetPasswordOpen &&
           config?.signInOptions?.map((provider, i) => {
             if (typeof provider == "string") {
               return (
@@ -77,6 +82,7 @@ export default function FirebaseUI({ auth, config }) {
                   setVerify={setVerify}
                   setMfaSignIn={setMfaSignIn}
                   setMfaResolver={setMfaResolver}
+                  passwordSpecs={config?.passwordSpecs}
                 />
               );
             } else if (typeof provider == "object") {
@@ -86,6 +92,7 @@ export default function FirebaseUI({ auth, config }) {
                   auth={auth}
                   providerId={provider?.provider}
                   {...provider}
+                  passwordSpecs={config?.passwordSpecs}
                   callbacks={config?.callbacks}
                   continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
@@ -110,6 +117,8 @@ export default function FirebaseUI({ auth, config }) {
             user={user}
             mfaSignIn={mfaSignIn}
             mfaResolver={mfaResolver}
+            isResetPassword={isResetPassword}
+            setResetPasswordOpen={setResetPasswordOpen}
           />
         )}
         {verify && (
@@ -126,6 +135,8 @@ export default function FirebaseUI({ auth, config }) {
             setMfaSignIn={setMfaSignIn}
             setMfaResolver={setMfaResolver}
             setSendSMS={setSendSMS}
+            isResetPassword={isResetPassword}
+            setResetPasswordOpen={setResetPasswordOpen}
           />
         )}
 

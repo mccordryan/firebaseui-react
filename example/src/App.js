@@ -23,10 +23,10 @@ export default function Home() {
         console.error(error);
       },
     },
+    passwordSpecs: { containsSpecialCharacter: true, minCharacters: 8 },
     signInOptions: [
       {
         provider: "emailpassword",
-        passwordSpecs: { containsUppercase: true, containsLowercase: true, containsSpecialCharacter: true, containsNumber: true }
       },
       {
         provider: "google.com",

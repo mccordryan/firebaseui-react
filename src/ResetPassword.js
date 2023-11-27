@@ -1,8 +1,10 @@
 "use client"
 
+import { updatePassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
+import { errors } from "./Errors";
 
-export default function ResetPassword({ passwordSpecs }) {
+export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
     const [password, setPassword] = useState("");
     const [passwordVerify, setPasswordVerify] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
@@ -15,7 +17,22 @@ export default function ResetPassword({ passwordSpecs }) {
         e.preventDefault();
         if (!formIsValid) return;
 
-        console.log("Valid")
+        try {
+            updatePassword(auth.currentUser, password).then(() => {
+                if (callbacks?.signInSuccessWithAuthResult) {
+                    callbacks.signInSuccessWithAuthResult()
+                }
+            })
+        } catch (error) {
+            setError(
+                errors[signInError.code] === ""
+                    ? ""
+                    : errors[signInError.code] ||
+                    "Something went wrong. Try again later.",
+            );
+            if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
+            throw new Error(signInError.code);
+        }
     }
 
     useEffect(() => {
@@ -98,33 +115,43 @@ export default function ResetPassword({ passwordSpecs }) {
                             }}
                         />
                         {showPassHelper && (
-                            <div style={{
-                                width: '20%',
-                                padding: '0.5rem',
-                                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                                borderRadius: '0.375rem',
-                                position: 'absolute',
-                                backgroundColor: 'white'
-                            }}>
-                                <p>Your password must contain:</p>
-                                <ul>
-                                    {password.length < (passwordSpecs?.minCharacters || 6) && (
-                                        <li>
-                                            - At least {passwordSpecs?.minCharacters || 6} characters
-                                        </li>
+                            <div style={{ marginTop: '0.25rem', width: '100%' }}>
+                                {password.length < (passwordSpecs?.minCharacters || 6) && (
+                                    <p style={{
+                                        margin: '0.25rem 0rem',
+                                        color: '#FF0000',
+                                        textAlign: 'right'
+                                    }}>
+                                        {passwordSpecs?.minCharacters || 6} characters minimum
+                                    </p>
+                                )}
+                                {passwordSpecs?.containsUppercase &&
+                                    !/[A-Z]/.test(password) && <p style={{
+                                        margin: '0.25rem 0rem',
+                                        color: '#FF0000',
+                                        textAlign: 'right'
+                                    }}>1 uppercase character</p>}
+                                {passwordSpecs?.containsLowercase &&
+                                    !/[a-z]/.test(password) && <p style={{
+                                        margin: '0.25rem 0rem',
+                                        color: '#FF0000',
+                                        textAlign: 'right'
+                                    }}>1 lowercase character</p>}
+                                {passwordSpecs?.containsNumber && !/\d/.test(password) && (
+                                    <p style={{
+                                        margin: '0.25rem 0rem',
+                                        color: '#FF0000',
+                                        textAlign: 'right'
+                                    }}>1 number</p>
+                                )}
+                                {passwordSpecs?.containsSpecialCharacter &&
+                                    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && (
+                                        <p style={{
+                                            margin: '0.25rem 0rem',
+                                            color: '#FF0000',
+                                            textAlign: 'right'
+                                        }}>1 special character</p>
                                     )}
-                                    {passwordSpecs?.containsUppercase &&
-                                        !/[A-Z]/.test(password) && <li>- 1 uppercase character</li>}
-                                    {passwordSpecs?.containsLowercase &&
-                                        !/[a-z]/.test(password) && <li>- 1 lowercase character</li>}
-                                    {passwordSpecs?.containsNumber && !/\d/.test(password) && (
-                                        <li>- 1 number</li>
-                                    )}
-                                    {passwordSpecs?.containsSpecialCharacter &&
-                                        !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) && (
-                                            <li>- 1 special character</li>
-                                        )}
-                                </ul>
                             </div>
                         )}
                     </div>
@@ -142,6 +169,14 @@ export default function ResetPassword({ passwordSpecs }) {
                             width: '100%'
                         }}
                     />
+
+                    {password.length > 0 && passwordVerify.length > 0 && password != passwordVerify && <div style={{ marginTop: '0.25rem', width: '100%' }}>
+                        <p style={{
+                            margin: '0.25rem 0rem',
+                            color: '#FF0000',
+                            textAlign: 'right'
+                        }}>Passwords must match</p>
+                    </div>}
 
                     <button
                         type="submit"

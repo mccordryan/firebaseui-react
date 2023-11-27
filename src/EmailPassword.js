@@ -6,6 +6,7 @@ import {
   getMultiFactorResolver,
   sendEmailVerification,
   sendPasswordResetEmail,
+  sendSignInLinkToEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
@@ -159,10 +160,9 @@ export default function EmailPassword({
     }
 
     if (resetPassword) {
-      await sendPasswordResetEmail(auth, email, {
+      await sendSignInLinkToEmail(auth, email, {
         handleCodeInApp: true,
-        //url: `${continueUrl}/?resetPassword=true&email=${email}`,
-        url: continueUrl
+        url: `${continueUrl}/?resetPassword=true&email=${email}`
       }).then(() => {
         setAlert(`A reset-password email has been sent to ${email}.`);
       });

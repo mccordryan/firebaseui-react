@@ -16,7 +16,9 @@ export default function EmailLink({
   setMfaResolver,
   setSendSMS,
   setMfaSignIn,
-  auth
+  auth,
+  setResetPasswordOpen,
+  isResetPassword
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -45,7 +47,11 @@ export default function EmailLink({
       try {
         await signInWithEmailLink(auth, queryEmail, window.location.href).then(
           (user) => {
-            if (callbacks?.signInSuccessWithAuthResult)
+            if (isResetPassword) {
+              setResetPasswordOpen(true);
+              setEmailLinkOpen(false);
+            }
+            else if (callbacks?.signInSuccessWithAuthResult)
               callbacks.signInSuccessWithAuthResult(user);
             setEmailLinkOpen(false);
           },

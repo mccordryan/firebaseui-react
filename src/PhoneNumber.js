@@ -15,7 +15,9 @@ export default function PhoneNumber({
   callbacks,
   mfaSignIn,
   mfaResolver,
-  auth
+  auth,
+  isResetPassword,
+  setResetPasswordOpen
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -28,21 +30,32 @@ export default function PhoneNumber({
   const [verificationId, setVerificationId] = useState();
 
   const phoneAuthProvider = new PhoneAuthProvider(auth);
+  let recaptchaVerifier
+
+  useEffect(() => {
+    const container = document.getElementById('recaptcha-container');
+    if (container && !recaptchaVerifier) {
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+    }
+  }, [])
+
 
   const sendMfaText = function () {
-    if (mfaSignIn && mfaResolver && window.recaptchaVerifier) {
+    if (mfaSignIn && mfaResolver && recaptchaVerifier) {
 
       const phoneInfoOptions = {
         multiFactorHint: mfaResolver.hints[0],
         session: mfaResolver.session
       }
       try {
-        phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, window.recaptchaVerifier).then((vId) => {
+        phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier).then((vId) => {
           setVerificationId(vId);
           setEnterCode(true);
         })
       } catch (error) {
-        window.recaptchaVerifier.clear();
+        recaptchaVerifier.clear();
       }
     }
   }
@@ -93,19 +106,11 @@ export default function PhoneNumber({
   };
 
 
-  useEffect(() => {
-    if (auth) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
-        size: "invisible",
-      });
-    }
-  }, [auth]);
-
   const sendCode = async function () {
     try {
       if (!phoneNumber || phoneNumber.length < 12) return;
       const formattedNumber = countryCode + " " + phoneNumber;
-      const appVerifier = window.recaptchaVerifier;
+      const appVerifier = recaptchaVerifier;
       await signInWithPhoneNumber(auth, formattedNumber, appVerifier).then(
         (confirmationResult) => {
           setAlert(`A code has been sent to ${phoneNumber}.`);
@@ -150,7 +155,11 @@ export default function PhoneNumber({
       const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
       try {
         mfaResolver.resolveSignIn(multiFactorAssertion).then((userCred) => {
-          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred.user);
+          if (isResetPassword) {
+            setResetPasswordOpen(true)
+            setSendSMS(false)
+          }
+          else if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred.user);
         })
       } catch (error) {
         console.error(error);
@@ -389,6 +398,7 @@ export default function PhoneNumber({
           </form>
         </>
       )}
+      <div id="recaptcha-container"></div>
       <button
         id="sign-in-button"
         onClick={handleButtonPress}
