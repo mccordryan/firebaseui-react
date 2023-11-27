@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
 import { errors } from "./Errors";
@@ -22,23 +23,25 @@ export default function EmailPassword({
   passwordSpecs,
   setSendSMS,
   setMfaSignIn,
-  setMfaResolver
+  setMfaResolver,
+  displayName
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
   const [resetPassword, setResetPassword] = useState(false);
+  const [name, setName] = useState("");
 
   const emailRef = useRef(null);
   const [showPassHelper, setShowPassHelper] = useState(false);
 
   useEffect(() => {
     setFormIsValid(
-      isEmailValid() && (resetPassword ? true : isPasswordValid()),
+      isEmailValid() && (resetPassword ? true : isPasswordValid()) && (displayName === "required" ? name.length > 0 : true),
     );
 
     setShowPassHelper(!isPasswordValid() && password.length > 0);
-  }, [email, password]);
+  }, [email, password, name]);
 
   const isEmailValid = function () {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -128,8 +131,15 @@ export default function EmailPassword({
           ? signInWithEmailAndPassword(auth, email, password)
           : createUserWithEmailAndPassword(auth, email, password);
       try {
-        await authFunction().then((user) => {
-          if (callbacks?.signInSuccessWithAuthResult) {
+        await authFunction().then(async (user) => {
+          if (authType == "signUp" && (displayName == "required" || name.length > 0)) {
+            await updateProfile(user.user, { displayName: name }).then(() => {
+              if (callbacks?.signInSuccessWithAuthResult) {
+                callbacks.signInSuccessWithAuthResult(user);
+              }
+            })
+          }
+          else if (callbacks?.signInSuccessWithAuthResult) {
             callbacks.signInSuccessWithAuthResult(user);
           }
         });
@@ -191,13 +201,30 @@ export default function EmailPassword({
         gap: '0.5rem',
         width: '100%'
       }}>
+        {authType === "signUp" && displayName &&
+          <>
+            {displayName == "required" ? <label htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{
+                border: '1px solid #e2e8f0', // gray-300
+                borderRadius: '0.375rem',
+                padding: '0.5rem 0.25rem',
+                width: '100%',
+                marginBottom: '0.25rem'
+              }}
+            /></>}
+
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
 
-          <label htmlFor="email">Email Address</label>
+          <label htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
           {resetPassword && <button
             onClick={() => setResetPassword(false)}
             style={{
@@ -211,6 +238,7 @@ export default function EmailPassword({
             Cancel
           </button>}
         </div>
+
         <input
           data-testid="emailinput"
           ref={emailRef}
@@ -242,7 +270,7 @@ export default function EmailPassword({
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password<span style={{ color: "#FF0000" }}> *</span></label>
             <button
               onClick={() => setResetPassword(true)}
               style={{

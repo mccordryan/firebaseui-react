@@ -23,7 +23,9 @@ export default function Home() {
         console.error(error);
       },
     },
+    authType: "signIn",
     passwordSpecs: { containsSpecialCharacter: true, minCharacters: 8 },
+    displayName: "required",
     signInOptions: [
       {
         provider: "emailpassword",

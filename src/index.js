@@ -15,11 +15,6 @@ export default function FirebaseUI({ auth, config }) {
     isSignInWithEmailLink(auth, window.location.href),
   );
 
-  useEffect(() => {
-    console.log(sendSMS)
-  }, [sendSMS])
-
-
   const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
@@ -74,6 +69,8 @@ export default function FirebaseUI({ auth, config }) {
                   providerId={provider}
                   callbacks={config?.callbacks}
                   continueUrl={config?.continueUrl}
+                  displayName={config?.displayName}
+                  authType={config?.authType}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -90,10 +87,12 @@ export default function FirebaseUI({ auth, config }) {
                 <Provider
                   key={i}
                   auth={auth}
+                  authType={config?.authType}
                   providerId={provider?.provider}
                   {...provider}
                   passwordSpecs={config?.passwordSpecs}
                   callbacks={config?.callbacks}
+                  displayName={config?.displayName}
                   continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
@@ -111,6 +110,7 @@ export default function FirebaseUI({ auth, config }) {
           <PhoneNumber
             callbacks={config?.callbacks}
             auth={auth}
+            authType={config?.authType}
             setSendSMS={setSendSMS}
             setAlert={setAlert}
             setError={setError}
@@ -119,6 +119,7 @@ export default function FirebaseUI({ auth, config }) {
             mfaResolver={mfaResolver}
             isResetPassword={isResetPassword}
             setResetPasswordOpen={setResetPasswordOpen}
+            displayName={config?.displayName}
           />
         )}
         {verify && (
@@ -127,6 +128,7 @@ export default function FirebaseUI({ auth, config }) {
         {emailLinkOpen && (
           <EmailLink
             auth={auth}
+            authType={config?.authType}
             setEmailLinkOpen={setEmailLinkOpen}
             continueUrl={config?.continueUrl}
             setAlert={setAlert}
@@ -137,6 +139,7 @@ export default function FirebaseUI({ auth, config }) {
             setSendSMS={setSendSMS}
             isResetPassword={isResetPassword}
             setResetPasswordOpen={setResetPasswordOpen}
+            displayName={config?.displayName}
           />
         )}
 

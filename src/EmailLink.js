@@ -3,6 +3,7 @@ import {
   isSignInWithEmailLink,
   sendSignInLinkToEmail,
   signInWithEmailLink,
+  updateProfile,
 } from "firebase/auth";
 import React, { useState, useEffect, useRef } from "react";
 import { errors } from "./Errors";
@@ -18,19 +19,21 @@ export default function EmailLink({
   setMfaSignIn,
   auth,
   setResetPasswordOpen,
-  isResetPassword
+  isResetPassword,
+  authType,
+  displayName
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
   const [finishEmailSignIn, setFinishEmailSignIn] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
-
+  const [name, setName] = useState("");
   const emailRef = useRef(null);
 
   useEffect(() => {
-    setFormIsValid(isEmailValid());
-  }, [email]);
+    setFormIsValid(isEmailValid() && (displayName == "required" ? name.length > 0 : true));
+  }, [email, name]);
 
   useEffect(() => {
     if (auth && finishEmailSignIn && !isSigningIn) {
@@ -43,6 +46,7 @@ export default function EmailLink({
     async function finishSignUp() {
       const queryParams = new URLSearchParams(window.location.search);
       const queryEmail = queryParams.get('email');
+      const queryName = queryParams.get('name');
 
       try {
         await signInWithEmailLink(auth, queryEmail, window.location.href).then(
@@ -50,6 +54,11 @@ export default function EmailLink({
             if (isResetPassword) {
               setResetPasswordOpen(true);
               setEmailLinkOpen(false);
+            } else if (queryName) {
+              updateProfile(user.user, { displayName: queryName }).then(() => {
+                if (callbacks?.signInSuccessWithAuthResult)
+                  callbacks.signInSuccessWithAuthResult(user);
+              })
             }
             else if (callbacks?.signInSuccessWithAuthResult)
               callbacks.signInSuccessWithAuthResult(user);
@@ -95,7 +104,7 @@ export default function EmailLink({
       } else {
         await sendSignInLinkToEmail(auth, email, {
           handleCodeInApp: true,
-          url: `${continueUrl}/?email=${email}`,
+          url: `${continueUrl}/?email=${email}${(name.length > 0) ? "&name=" + name : ""}`
         }).then(() => {
           setAlert(`A sign in link has been sent to ${email}`);
         });
@@ -108,6 +117,7 @@ export default function EmailLink({
           ? ""
           : errors[error.code] || "Something went wrong. Try again later.",
       );
+      throw new Error(error)
     }
   };
 
@@ -136,12 +146,13 @@ export default function EmailLink({
           gap: '0.5rem',
           width: '100%'
         }}>
+
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <label for="email">Email Address</label>
+            <label htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
             <button
               onClick={() => setEmailLinkOpen(false)}
               style={{
@@ -155,6 +166,7 @@ export default function EmailLink({
               Cancel
             </button>
           </div>
+
           <input
             ref={emailRef}
             name="email"
@@ -165,15 +177,27 @@ export default function EmailLink({
             style={{
               border: '1px solid #e2e8f0', // gray-300
               borderRadius: '0.375rem',
-              padding: '0.5rem 0.75rem',
+              padding: '0.5rem 0.25rem',
               width: '100%'
             }}
 
-
-
-
-
           />
+          {authType === "signUp" && displayName &&
+            <>
+              {displayName == "required" ? <label htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{
+                  border: '1px solid #e2e8f0', // gray-300
+                  borderRadius: '0.375rem',
+                  padding: '0.5rem 0.25rem',
+                  width: '100%',
+                  marginBottom: '0.25rem'
+                }}
+              /></>}
         </div>
         <button
           type="submit"

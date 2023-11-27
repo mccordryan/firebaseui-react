@@ -34,7 +34,8 @@ export default function Provider({
   passwordSpecs,
   setVerify,
   setMfaSignIn,
-  setMfaResolver
+  setMfaResolver,
+  displayName
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -129,6 +130,7 @@ export default function Provider({
       setMfaSignIn={setMfaSignIn}
       setVerify={setVerify}
       setMfaResolver={setMfaResolver}
+      displayName={displayName}
     />
   ) : (
     <button

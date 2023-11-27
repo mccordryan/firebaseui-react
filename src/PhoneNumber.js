@@ -3,6 +3,7 @@ import {
   PhoneMultiFactorGenerator,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  updateProfile,
 } from "firebase/auth";
 import { providerStyles } from "./providerStyles";
 import React, { useEffect, useRef, useState } from "react";
@@ -17,17 +18,20 @@ export default function PhoneNumber({
   mfaResolver,
   auth,
   isResetPassword,
-  setResetPasswordOpen
+  setResetPasswordOpen,
+  authType,
+  displayName
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
   const [phoneNumber, setPhoneNumber] = useState();
   //TODO phone number validity
-  const [phoneNumberValid, setPhoneNumberValid] = useState(true);
+  const [phoneNumberValid, setPhoneNumberValid] = useState(false);
   const [enterCode, setEnterCode] = useState(false);
   const [code, setCode] = useState(Array(6).fill(""));
   const [countryCode, setCountryCode] = useState("+1");
   const [verificationId, setVerificationId] = useState();
+  const [name, setName] = useState("");
 
   const phoneAuthProvider = new PhoneAuthProvider(auth);
   let recaptchaVerifier
@@ -41,8 +45,12 @@ export default function PhoneNumber({
     }
   }, [])
 
+  useEffect(() => {
+    setPhoneNumberValid(enterCode || mfaSignIn ? true : /^\d{3}-\d{3}-\d{4}$/.test(phoneNumber) && (displayName == "required" ? name.length > 0 : true))
+  }, [phoneNumber, name])
 
   const sendMfaText = function () {
+    console.log("MFA")
     if (mfaSignIn && mfaResolver && recaptchaVerifier) {
 
       const phoneInfoOptions = {
@@ -108,10 +116,14 @@ export default function PhoneNumber({
 
   const sendCode = async function () {
     try {
-      if (!phoneNumber || phoneNumber.length < 12) return;
+      if (!recaptchaVerifier) {
+        recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible'
+        });
+      }
+      if (!phoneNumber || phoneNumber.length < 12 || !phoneNumberValid || !recaptchaVerifier) return;
       const formattedNumber = countryCode + " " + phoneNumber;
-      const appVerifier = recaptchaVerifier;
-      await signInWithPhoneNumber(auth, formattedNumber, appVerifier).then(
+      await signInWithPhoneNumber(auth, formattedNumber, recaptchaVerifier).then(
         (confirmationResult) => {
           setAlert(`A code has been sent to ${phoneNumber}.`);
           window.confirmationResult = confirmationResult;
@@ -134,6 +146,9 @@ export default function PhoneNumber({
 
       await window.confirmationResult.confirm(formattedCode).then(() => {
         //TODO restructure to get user credential
+        if (name.length > 0) {
+          updateProfile(auth.currentUser, { displayName: name })
+        }
         setSendSMS(false);
       });
     } catch (error) {
@@ -201,7 +216,7 @@ export default function PhoneNumber({
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 color: '#1a202c',
-              }}>Country Code</label>
+              }}>Country Code<span style={{ color: "#FF0000" }}> *</span></label>
               <button
                 onClick={() => setSendSMS(false)}
                 style={{
@@ -334,13 +349,14 @@ export default function PhoneNumber({
               <option value="+998">🇺🇿 Uzbekistan +998</option>
               <option value="+58">🇻🇪 Venezuela +58</option>
             </select>
+
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <label style={{
               fontSize: '0.875rem',
               fontWeight: '500',
               color: '#1a202c',
-            }}>Phone Number</label>
+            }}>Phone Number<span style={{ color: "#FF0000" }}> *</span></label>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <input
                 value={phoneNumber}
@@ -353,7 +369,30 @@ export default function PhoneNumber({
                   width: '100%'
                 }}
               />
+
+
             </div>
+
+            {authType === "signUp" && displayName &&
+              <div style={{ marginTop: '0.25rem' }}>
+                {displayName == "required" ? <label style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#1a202c',
+                }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  style={{
+                    border: '1px solid #e2e8f0', // gray-300
+                    borderRadius: '0.375rem',
+                    padding: '0.5rem 0.25rem',
+                    width: '100%',
+                    marginBottom: '0.25rem'
+                  }}
+                /></div>}
           </div>
         </form>
       )}
