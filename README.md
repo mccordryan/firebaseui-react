@@ -2,6 +2,12 @@
 
 React-FirebaseUI is a component library that allows you to add Firebase authentication to your React.js or Next.js project with only a few lines of code, regardless of your specific use case.
 
+# Demo
+
+See a demo here: https://fuidemo.vercel.app/
+
+Note that, while all buttons are displayed, the demo currently only supports Email, Phone Number, Google, Passwordless, and anonymous sign in.
+
 # Getting Started
 
 1. Install using your preferred package manager:
@@ -30,6 +36,10 @@ React-FirebaseUI is a component library that allows you to add Firebase authenti
    ```js
    <FirebaseUI auth={auth} config={config} />
    ```
+
+# Configuration
+
+The rest of this documentation will show the various ways you can modify your configuration object for your use case. Refer to the final section for an exhaustive configuration example, containing all possible fields.
 
 # Sign In Options
 
@@ -89,6 +99,7 @@ const config = {
 }
 ```
 
+Scope names are determined by the provider themselves, and can be found online with a quick search (i.e. Facebook Provider Scopes List)
 **Sign In Flow**
 
 You can set the sign in flow on third party providers to use either a redirect or a popup:
@@ -110,14 +121,61 @@ const config = {
 
 **Overriding Default Styles**
 
-To override default button styles, pass a `customStyles` object containing React inline styles to the corresponding provider object:
+To override default button styles, pass a `customStyles` object containing React inline styles to the corresponding provider object. To override the background color:
+
+```js
+const config = {
+  signInOptions: [
+    { provider: "google.com", customStyles: { backgroundColor: "#000" } }, // sets the background color to black
+  ],
+};
+```
+
+To override the text color:
+
+```js
+const config = {
+  signInOptions: [
+    { provider: "google.com", customStyles: { color: "#fff" } }, // sets the text color to white
+  ],
+};
+```
+
+To override the border color:
+
+```js
+const config = {
+  signInOptions: [
+    { provider: "google.com", customStyles: { borderColor: "#FF0000" } }, // sets the background color to red
+  ],
+};
+```
+
+Or to override all three:
 
 ```js
 const config = {
   signInOptions: [
     {
       provider: "google.com",
-      customStyles: { color: "#FF0000" },
+      customStyles: {
+        backgroundColor: "#000",
+        color: "#fff",
+        borderColor: "#FF0000",
+      },
+    },
+  ],
+};
+```
+
+Note that you can add any React inline styles to customize these buttons, including properties that are not already in use. To add a text underline, for example:
+
+```js
+const config = {
+  signInOptions: [
+    {
+      provider: "google.com",
+      customStyles: { textDecoration: "underline" },
     },
   ],
 };
@@ -130,10 +188,10 @@ By default, all buttons follow the `Sign In With <ProviderName>` pattern. You ca
 ```js
 const config = {
   signInOptions: [
-    //Will display as "Sign In With Twitter"
+    //Will display as "Sign In With X"
     {
       provider: "x.com",
-      providerName: "Twitter",
+      providerName: "X",
     },
 
     //Will display as "Continue With Google"
@@ -153,12 +211,12 @@ To run some code after the user has been successfully authenticated (likely rout
 const config = {
   callbacks: {
     //Authentication was successful
-    signInSuccessWithAuthResult: function (userCredential) {
+    signInSuccessWithAuthResult: (userCredential) => {
       //route the user somewhere
     },
 
     //Authentication failed
-    signInFailure: function (error) {
+    signInFailure: (error) => {
       //custom error handling
     },
   },
@@ -235,5 +293,74 @@ To get the user's display name on non-Oauth providers (email/password, email lin
 const config = {
   displayName: "required",
   signInOptions: ["emailpassword", "phonenumber", "emaillink"],
+};
+```
+
+# Full Configuration Example
+
+```js
+const config = {
+  // URL to redirect to after a successful sign-in.
+  continueUrl: "example.com/auth",
+
+  // Define all supported sign-in methods.
+  signInOptions: [
+    // Basic providers
+    "emailpassword",
+    "apple.com",
+    "x.com",
+    "github.com",
+    "microsoft.com",
+    "yahoo.com",
+    "phonenumber", // SMS Text Sign-In
+    "emaillink", // Email Link (passwordless) Sign-In
+    "anonymous",
+
+    // Advanced Google provider configuration
+    {
+      provider: "google.com",
+      customParameters: { prompt: "select_account" },
+      signInFlow: "redirect", // Other value: 'popup'
+      scopes: ["https://www.googleapis.com/auth/userinfo.email"], // Adding OAuth Scopes
+      customStyles: {
+        backgroundColor: "#000000", // Black background
+        color: "#FFFFFF", // White text
+        borderColor: "#FF0000", // Red border
+        textDecoration: "underline", // Underlined text
+      },
+      fullLabel: "Continue With Google", // Custom button text
+    },
+
+    // Advanced Facebook provider configuration
+    {
+      provider: "facebook.com",
+      scopes: ["user_birthday", "user_likes"], // Adding multiple OAuth Scopes
+    },
+  ],
+
+  // Customizing authentication types for Email/Password
+  authType: "signIn", // Other values: 'signUp'
+
+  // Custom password requirements
+  passwordSpecs: {
+    minCharacters: 8, // Minimum 6
+    containsUppercase: true,
+    containsLowercase: true,
+    containsNumber: true,
+    containsSpecialCharacter: true,
+  },
+
+  // Display Name configuration for non-OAuth providers
+  displayName: "required", // Other value: 'optional'
+
+  // Success and Failure Callbacks
+  callbacks: {
+    signInSuccessWithAuthResult: (userCredential) => {
+      // Handle successful authentication
+    },
+    signInFailure: (error) => {
+      // Handle authentication failure
+    },
+  },
 };
 ```
