@@ -6,7 +6,6 @@ import { errors } from "./Errors";
 
 export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
     const [password, setPassword] = useState("");
-    const [passwordVerify, setPasswordVerify] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
 
     const queryParams = new URLSearchParams(window.location.search);
@@ -37,11 +36,11 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
 
     useEffect(() => {
         setFormIsValid(
-            isPasswordValid() && password === passwordVerify,
+            isPasswordValid(),
         );
 
         setShowPassHelper(!isPasswordValid() && password.length > 0);
-    }, [password, passwordVerify]);
+    }, [password]);
 
     const isPasswordValid = function () {
         let isValid = password.length > 5; //basic firebase requirement
@@ -155,28 +154,6 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
                             </div>
                         )}
                     </div>
-                    <label htmlFor="passwordverify">Confirm Password</label>
-                    <input
-                        data-testid="passwordInput"
-                        id="passwordverify"
-                        type="password"
-                        value={passwordVerify}
-                        onChange={(e) => setPasswordVerify(e.target.value)}
-                        style={{
-                            border: '1px solid #e2e8f0', // gray-300
-                            borderRadius: '0.375rem',
-                            padding: '0.5rem 0.75rem',
-                            width: '100%'
-                        }}
-                    />
-
-                    {password.length > 0 && passwordVerify.length > 0 && password != passwordVerify && <div style={{ marginTop: '0.25rem', width: '100%' }}>
-                        <p style={{
-                            margin: '0.25rem 0rem',
-                            color: '#FF0000',
-                            textAlign: 'right'
-                        }}>Passwords must match</p>
-                    </div>}
 
                     <button
                         type="submit"
