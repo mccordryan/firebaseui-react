@@ -35,7 +35,8 @@ export default function Provider({
   setVerify,
   setMfaSignIn,
   setMfaResolver,
-  displayName
+  displayName,
+  icon
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -149,7 +150,7 @@ export default function Provider({
       }}
       onClick={submit}
     >
-      {styles.icon}
+      {icon ? icon : styles.icon}
       <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
         {fullLabel ? fullLabel : `Sign in with ${providerName}`}
       </span>
