@@ -57,7 +57,18 @@ export default function FirebaseUI({ auth, config }) {
           gap: '0.75rem'
         }}
       >
-        {resetPasswordOpen && <ResetPassword callbacks={config?.callbacks} setAlert={setAlert} setError={setError} auth={auth} passwordSpecs={config?.passwordSpecs} />}
+        {resetPasswordOpen &&
+          <ResetPassword
+            callbacks={config?.callbacks}
+            setAlert={setAlert}
+            setError={setError}
+            auth={auth}
+            passwordSpecs={config?.passwordSpecs}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
+          />}
         {!sendSMS &&
           !emailLinkOpen && !verify && !resetPasswordOpen &&
           config?.signInOptions?.map((provider, i) => {
@@ -80,6 +91,10 @@ export default function FirebaseUI({ auth, config }) {
                   setMfaSignIn={setMfaSignIn}
                   setMfaResolver={setMfaResolver}
                   passwordSpecs={config?.passwordSpecs}
+                  formButtonStyles={config?.formButtonStyles}
+                  formDisabledStyles={config?.formDisabledStyles}
+                  formInputStyles={config?.formInputStyles}
+                  formLabelStyles={config?.formLabelStyles}
                 />
               );
             } else if (typeof provider == "object") {
@@ -102,6 +117,10 @@ export default function FirebaseUI({ auth, config }) {
                   setVerify={setVerify}
                   setMfaSignIn={setMfaSignIn}
                   setMfaResolver={setMfaResolver}
+                  formButtonStyles={config?.formButtonStyles}
+                  formDisabledStyles={config?.formDisabledStyles}
+                  formInputStyles={config?.formInputStyles}
+                  formLabelStyles={config?.formLabelStyles}
                 />
               );
             }
@@ -120,6 +139,10 @@ export default function FirebaseUI({ auth, config }) {
             isResetPassword={isResetPassword}
             setResetPasswordOpen={setResetPasswordOpen}
             displayName={config?.displayName}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
           />
         )}
         {verify && (
@@ -140,6 +163,10 @@ export default function FirebaseUI({ auth, config }) {
             isResetPassword={isResetPassword}
             setResetPasswordOpen={setResetPasswordOpen}
             displayName={config?.displayName}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
           />
         )}
 

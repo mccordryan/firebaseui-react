@@ -36,7 +36,11 @@ export default function Provider({
   setMfaSignIn,
   setMfaResolver,
   displayName,
-  icon
+  icon,
+  formDisabledStyles,
+  formButtonStyles,
+  formInputStyles,
+  formLabelStyles
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -132,6 +136,12 @@ export default function Provider({
       setVerify={setVerify}
       setMfaResolver={setMfaResolver}
       displayName={displayName}
+      fullLabel={fullLabel}
+      customStyles={customStyles}
+      formDisabledStyles={formDisabledStyles}
+      formButtonStyles={formButtonStyles}
+      formInputStyles={formInputStyles}
+      formLabelStyles={formLabelStyles}
     />
   ) : (
     <button

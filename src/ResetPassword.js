@@ -4,7 +4,7 @@ import { updatePassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { errors } from "./Errors";
 
-export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
+export default function ResetPassword({ passwordSpecs, callbacks, auth, formInputStyles, formDisabledStyles, formLabelStyles, formButtonStyles }) {
     const [password, setPassword] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
 
@@ -97,7 +97,7 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <label htmlFor="password">New Password</label>
+                        <label style={{ ...formLabelStyles }} htmlFor="password">New Password</label>
                     </div>
                     <div>
                         <input
@@ -110,7 +110,8 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
                                 border: '1px solid #e2e8f0', // gray-300
                                 borderRadius: '0.375rem',
                                 padding: '0.5rem 0.75rem',
-                                width: '100%'
+                                width: '100%',
+                                ...formInputStyles
                             }}
                         />
                         {showPassHelper && (
@@ -173,6 +174,8 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth }) {
                             boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                             justifyContent: 'center',
                             border: 'none',
+                            ...formButtonStyles,
+                            ...(formIsValid ? {} : formDisabledStyles)
                         }}
                         onClick={(e) => submit(e)}
                     >

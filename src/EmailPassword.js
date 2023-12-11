@@ -24,7 +24,13 @@ export default function EmailPassword({
   setSendSMS,
   setMfaSignIn,
   setMfaResolver,
-  displayName
+  displayName,
+  customStyles,
+  fullLabel,
+  formButtonStyles,
+  formDisabledStyles,
+  formInputStyles,
+  formLabelStyles
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,12 +42,17 @@ export default function EmailPassword({
   const [showPassHelper, setShowPassHelper] = useState(false);
 
   useEffect(() => {
+    console.log("here")
     setFormIsValid(
       isEmailValid() && (resetPassword ? true : isPasswordValid()) && (displayName === "required" ? name.length > 0 : true),
     );
 
     setShowPassHelper(!isPasswordValid() && password.length > 0);
   }, [email, password, name]);
+
+  useEffect(() => {
+    console.log(formIsValid)
+  }, [formIsValid])
 
   const isEmailValid = function () {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -203,7 +214,7 @@ export default function EmailPassword({
       }}>
         {authType === "signUp" && displayName &&
           <>
-            {displayName == "required" ? <label htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+            {displayName == "required" ? <label style={{ ...formLabelStyles }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label style={{ ...formLabelStyles }} htmlFor="name">Name</label>}
             <input
               id="name"
               type="text"
@@ -214,7 +225,8 @@ export default function EmailPassword({
                 borderRadius: '0.375rem',
                 padding: '0.5rem 0.25rem',
                 width: '100%',
-                marginBottom: '0.25rem'
+                marginBottom: '0.25rem',
+                ...formInputStyles
               }}
             /></>}
 
@@ -224,7 +236,7 @@ export default function EmailPassword({
           alignItems: 'center'
         }}>
 
-          <label htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
+          <label style={{ ...formLabelStyles }} htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
           {resetPassword && <button
             onClick={() => setResetPassword(false)}
             style={{
@@ -251,7 +263,8 @@ export default function EmailPassword({
             border: '1px solid #e2e8f0', // gray-300
             borderRadius: '0.375rem',
             padding: '0.5rem 0.25rem',
-            width: '100%'
+            width: '100%',
+            ...formInputStyles
           }}
         />
       </div>
@@ -270,7 +283,7 @@ export default function EmailPassword({
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <label htmlFor="password">Password<span style={{ color: "#FF0000" }}> *</span></label>
+            <label style={{ ...formLabelStyles }} htmlFor="password">Password<span style={{ color: "#FF0000" }}> *</span></label>
             {continueUrl && <button
               onClick={() => setResetPassword(true)}
               style={{
@@ -295,7 +308,8 @@ export default function EmailPassword({
                 border: '1px solid #e2e8f0', // gray-300
                 borderRadius: '0.375rem',
                 padding: '0.5rem 0.25rem',
-                width: '100%'
+                width: '100%',
+                ...formInputStyles
               }}
             />
             {showPassHelper && (
@@ -348,6 +362,7 @@ export default function EmailPassword({
           color: 'white',
           fontWeight: '600',
           marginTop: '1.25rem',
+          height: '2.25rem',
           width: '100%',
           transition: 'background-color 150ms',
           backgroundColor: formIsValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
@@ -359,11 +374,14 @@ export default function EmailPassword({
           borderRadius: '0.375rem',
           boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
           justifyContent: 'center',
+          alignItems: 'center',
           border: 'none',
+          ...formButtonStyles,
+          ...(formIsValid ? {} : formDisabledStyles),
         }}
         onClick={submit}
       >
-        {resetPassword ? "Reset Password" : "Sign In With Email"}
+        {resetPassword ? "Reset Password" : fullLabel || "Sign In With Email"}
       </button>
 
 

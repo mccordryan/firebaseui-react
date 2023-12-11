@@ -181,6 +181,46 @@ const config = {
 };
 ```
 
+**Overriding Form Styles**
+
+To override the styles of inputs, labels, and form buttons, you can pass an object of React Inline Styles (see above) to your top level configuration. The following is a list of valid form style fields:
+
+- `formButtonStyles` overrides the default blue form button.
+- `formDisabledStyles` overrides the gray disabled form button.
+- `formInputStyles` overrides default <input> styles
+- `formLabelStyles` overrides default <label> styles
+
+```js
+const config = {
+  signInOptions: ["emailpassword", "emaillink", "phonenumber"],
+  formButtonStyles: { backgroundColor: "green" },
+  formDisabledStyles: { backgroundColor: "red" },
+  formInputStyles: { padding: "5px" },
+  formLabelStyles: { fontWeight: "700" },
+};
+```
+
+Note that styles set in `formButtonStyles` will persist into the disabled state unless directly overridden in `formDisabledStyles`. In the example below, the 20px of padding will be applied regardless of the button's disabled state. Only the color will change.
+
+```js
+const config = {
+  signInOptions: ["emailpassword", "emaillink", "phonenumber"],
+  formButtonStyles: { padding: "20px", backgroundColor: "green" },
+  formDisabledStyles: { backgroundColor: "red" },
+};
+```
+
+**Overriding Default Icons**
+
+You can replace the default icons with custom ones by adding an `icon` field to the corresponding provider:
+
+```js
+const myCustomIcon = <svg>{/*SVG Information*/}</svg>;
+const config = {
+  signInOptions: [{ provider: "google.com", icon: myCustomIcon }],
+};
+```
+
 **Overriding Button Text**
 
 By default, all buttons follow the `Sign In With <ProviderName>` pattern. You can change either the ProviderName, or the full text:
@@ -250,8 +290,6 @@ const config = {
   signInOptions: ["emailpassword"],
 };
 ```
-
-You can add other providers if desired, but keep in mind they will not be limited to the authentication type you specify.
 
 **continueUrl**
 

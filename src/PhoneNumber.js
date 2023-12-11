@@ -20,7 +20,11 @@ export default function PhoneNumber({
   isResetPassword,
   setResetPasswordOpen,
   authType,
-  displayName
+  displayName,
+  formButtonStyles,
+  formDisabledStyles,
+  formInputStyles,
+  formLabelStyles
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -216,6 +220,7 @@ export default function PhoneNumber({
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 color: '#1a202c',
+                ...formLabelStyles
               }}>Country Code<span style={{ color: "#FF0000" }}> *</span></label>
               <button
                 onClick={() => setSendSMS(false)}
@@ -356,6 +361,7 @@ export default function PhoneNumber({
               fontSize: '0.875rem',
               fontWeight: '500',
               color: '#1a202c',
+              ...formLabelStyles
             }}>Phone Number<span style={{ color: "#FF0000" }}> *</span></label>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <input
@@ -366,7 +372,8 @@ export default function PhoneNumber({
                   border: '1px solid #e2e8f0', // gray-300
                   borderRadius: '0.375rem',
                   padding: '0.5rem 0.75rem',
-                  width: '100%'
+                  width: '100%',
+                  ...formInputStyles
                 }}
               />
 
@@ -379,7 +386,8 @@ export default function PhoneNumber({
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   color: '#1a202c',
-                }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+                  ...formLabelStyles
+                }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label style={{ ...formLabelStyles }} htmlFor="name">Name</label>}
                 <input
                   id="name"
                   type="text"
@@ -390,7 +398,8 @@ export default function PhoneNumber({
                     borderRadius: '0.375rem',
                     padding: '0.5rem 0.25rem',
                     width: '100%',
-                    marginBottom: '0.25rem'
+                    marginBottom: '0.25rem',
+                    ...formInputStyles
                   }}
                 /></div>}
           </div>
@@ -457,6 +466,8 @@ export default function PhoneNumber({
           boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
           justifyContent: 'center',
           border: 'none',
+          ...formButtonStyles,
+          ...(phoneNumberValid ? {} : formDisabledStyles)
         }}
       >
         <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>

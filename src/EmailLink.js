@@ -21,7 +21,11 @@ export default function EmailLink({
   setResetPasswordOpen,
   isResetPassword,
   authType,
-  displayName
+  displayName,
+  formButtonStyles,
+  formDisabledStyles,
+  formInputStyles,
+  formLabelStyles
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -152,7 +156,7 @@ export default function EmailLink({
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <label htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
+            <label style={{ ...formLabelStyles }} htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
             <button
               onClick={() => setEmailLinkOpen(false)}
               style={{
@@ -178,13 +182,14 @@ export default function EmailLink({
               border: '1px solid #e2e8f0', // gray-300
               borderRadius: '0.375rem',
               padding: '0.5rem 0.25rem',
-              width: '100%'
+              width: '100%',
+              ...formInputStyles
             }}
 
           />
           {authType === "signUp" && displayName &&
             <>
-              {displayName == "required" ? <label htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label htmlFor="name">Name</label>}
+              {displayName == "required" ? <label style={{ ...formLabelStyles }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label style={{ ...formLabelStyles }} htmlFor="name">Name</label>}
               <input
                 id="name"
                 type="text"
@@ -195,7 +200,8 @@ export default function EmailLink({
                   borderRadius: '0.375rem',
                   padding: '0.5rem 0.25rem',
                   width: '100%',
-                  marginBottom: '0.25rem'
+                  marginBottom: '0.25rem',
+                  ...formInputStyles
                 }}
               /></>}
         </div>
@@ -217,6 +223,8 @@ export default function EmailLink({
             boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
             justifyContent: 'center',
             border: 'none',
+            ...formButtonStyles,
+            ...(formIsValid ? {} : formDisabledStyles)
           }}
           onClick={(e) => submit(e)}
         >
