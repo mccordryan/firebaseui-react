@@ -59,8 +59,10 @@ export default function Home() {
     return () => unsubscribe();
   }, [auth]);
 
+
+
   return (
-    <main style={{ backgroundColor: "#2e2e2e" }}>
+    <main>
       <h1>React FirebaseUI Component Demo</h1>
       <div style={{ width: '25vw' }}>
         <FirebaseUI auth={auth} config={UIConfig} />

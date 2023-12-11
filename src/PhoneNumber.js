@@ -25,7 +25,8 @@ export default function PhoneNumber({
   formDisabledStyles,
   formInputStyles,
   formLabelStyles,
-  formSmallButtonStyles
+  formSmallButtonStyles,
+  customErrors
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -137,11 +138,7 @@ export default function PhoneNumber({
       );
     } catch (error) {
       console.error(error);
-      setError(
-        errors[error.code] === ""
-          ? ""
-          : errors[error.code] || "Something went wrong. Try again later.",
-      );
+      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
     }
   };
 
@@ -158,11 +155,7 @@ export default function PhoneNumber({
       });
     } catch (error) {
       console.error(error);
-      setError(
-        errors[error.code] === ""
-          ? ""
-          : errors[error.code] || "Something went wrong. Try again later.",
-      );
+      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
       if (callbacks?.signInFailure) callbacks.signInFailure(error);
     }
   };
@@ -183,11 +176,7 @@ export default function PhoneNumber({
         })
       } catch (error) {
         console.error(error);
-        setError(
-          errors[error.code] === ""
-            ? ""
-            : errors[error.code] || "Something went wrong. Try again later.",
-        );
+        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
         if (callbacks?.signInFailure) callbacks.signInFailure(error);
       }
     } else if (mfaSignIn) {

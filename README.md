@@ -278,6 +278,20 @@ const config = {
 
 `signInSuccessWithAuthResult` is passed a userCredential object containing the Firebase Credential of the newly authenticated user. Likewise, `signInFailure` is passed the error thrown by the failed operation.
 
+# Custom Error Handling
+
+To override the default error messages, or set a message on an unhandled error, you can pass a `customErrors` object to your top level configuration. The keys of this object should be string-formatted error codes and the values should be the desired error message:
+
+```js
+const config = {
+  signInOptions: ["google.com"],
+  customErrors: {
+    "auth/cancelled-popup-request": "Womp Womp"
+    "auth/invalid-email": "", //Display No Error At All
+  }
+}
+```
+
 # Email/Password Options
 
 **Authentication Types (Sign In & Sign Up)**

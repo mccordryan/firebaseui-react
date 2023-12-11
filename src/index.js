@@ -35,6 +35,10 @@ export default function FirebaseUI({ auth, config }) {
   }, [auth]);
 
   useEffect(() => {
+    console.log(error)
+  }, [error])
+
+  useEffect(() => {
     //open the email verification for signed in but unverified users.
     if (config?.requireVerifyEmail && user && user.providerData[0].providerId == "password" && !user?.emailVerified) {
       setVerify(true);
@@ -69,6 +73,7 @@ export default function FirebaseUI({ auth, config }) {
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
           />}
         {!sendSMS &&
           !emailLinkOpen && !verify && !resetPasswordOpen &&
@@ -97,6 +102,7 @@ export default function FirebaseUI({ auth, config }) {
                   formInputStyles={config?.formInputStyles}
                   formLabelStyles={config?.formLabelStyles}
                   formSmallButtonStyles={config?.formSmallButtonStyles}
+                  customErrors={config?.customErrors}
                 />
               );
             } else if (typeof provider == "object") {
@@ -124,6 +130,7 @@ export default function FirebaseUI({ auth, config }) {
                   formInputStyles={config?.formInputStyles}
                   formLabelStyles={config?.formLabelStyles}
                   formSmallButtonStyles={config?.formSmallButtonStyles}
+                  customErrors={config?.customErrors}
                 />
               );
             }
@@ -147,10 +154,11 @@ export default function FirebaseUI({ auth, config }) {
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
           />
         )}
         {verify && (
-          <VerifyEmail user={user} setAlert={setAlert} setError={setError} setSendSMS={setSendSMS} />
+          <VerifyEmail customErrors={config?.customErrors} user={user} setAlert={setAlert} setError={setError} setSendSMS={setSendSMS} />
         )}
         {emailLinkOpen && (
           <EmailLink
@@ -172,6 +180,7 @@ export default function FirebaseUI({ auth, config }) {
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
           />
         )}
 

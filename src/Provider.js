@@ -41,7 +41,8 @@ export default function Provider({
   formButtonStyles,
   formInputStyles,
   formLabelStyles,
-  formSmallButtonStyles
+  formSmallButtonStyles,
+  customErrors
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -109,11 +110,7 @@ export default function Provider({
           setMfaSignIn(true);
           setSendSMS(true);
         } else {
-          setError(
-            errors[error.code] === ""
-              ? ""
-              : errors[error.code] || "Something went wrong. Try again later.",
-          );
+          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
           callbacks?.signInFailure(error);
         }
       }
@@ -144,6 +141,7 @@ export default function Provider({
       formInputStyles={formInputStyles}
       formLabelStyles={formLabelStyles}
       formSmallButtonStyles={formSmallButtonStyles}
+      customErrors={customErrors}
     />
   ) : (
     <button

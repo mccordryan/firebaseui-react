@@ -30,7 +30,8 @@ export default function EmailPassword({
   formDisabledStyles,
   formInputStyles,
   formLabelStyles,
-  formSmallButtonStyles
+  formSmallButtonStyles,
+  customErrors
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -115,22 +116,13 @@ export default function EmailPassword({
               setMfaSignIn(true);
               setSendSMS(true);
             } else {
-              setError(
-                errors[signInError.code] === ""
-                  ? ""
-                  : errors[signInError.code] ||
-                  "Something went wrong. Try again later.",
-              );
+
+              setError(customErrors && customErrors[signInError.code] !== undefined ? customErrors[signInError.code] : errors[signInError.code] || "Something went wrong. Try again later.");
               if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
               throw new Error(signInError.code);
             }
           } else if (signUpError.code) {
-
-            setError(errors[signUpError.code] === ""
-              ? ""
-              : errors[signUpError.code] ||
-              "Something went wrong. Try again later.",
-            );
+            setError(customErrors && customErrors[signUpError.code] !== undefined ? customErrors[signUpError.code] : errors[signUpError.code] || "Something went wrong. Try again later.");
             if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError);
             throw new Error(signUpError.code);
           }
@@ -155,11 +147,7 @@ export default function EmailPassword({
           }
         });
       } catch (error) {
-        setError(
-          errors[error.code] === ""
-            ? ""
-            : errors[error.code] || "Something went wrong. Try again later.",
-        );
+        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
         if (callbacks?.signInFailure) callbacks?.signInFailure(error);
         throw new Error(error.code);
       }

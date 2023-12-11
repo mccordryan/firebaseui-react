@@ -4,7 +4,7 @@ import { updatePassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { errors } from "./Errors";
 
-export default function ResetPassword({ passwordSpecs, callbacks, auth, formInputStyles, formDisabledStyles, formLabelStyles, formButtonStyles }) {
+export default function ResetPassword({ passwordSpecs, callbacks, auth, formInputStyles, formDisabledStyles, formLabelStyles, formButtonStyles, customErrors }) {
     const [password, setPassword] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
 
@@ -23,12 +23,7 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
                 }
             })
         } catch (error) {
-            setError(
-                errors[signInError.code] === ""
-                    ? ""
-                    : errors[signInError.code] ||
-                    "Something went wrong. Try again later.",
-            );
+            setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
             if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
             throw new Error(signInError.code);
         }

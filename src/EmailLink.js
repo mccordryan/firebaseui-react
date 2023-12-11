@@ -26,7 +26,8 @@ export default function EmailLink({
   formDisabledStyles,
   formInputStyles,
   formLabelStyles,
-  formSmallButtonStyles
+  formSmallButtonStyles,
+  customErrors
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -79,11 +80,7 @@ export default function EmailLink({
         } else {
           if (finishEmailSignIn && callbacks?.signInFailure)
             callbacks.signInFailure(error);
-          setError(
-            errors[error.code] === ""
-              ? ""
-              : errors[error.code] || "Something went wrong. Try again later.",
-          );
+          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
           throw new Error(error);
         }
       }
@@ -117,11 +114,7 @@ export default function EmailLink({
     } catch (error) {
       if (finishEmailSignIn && callbacks?.signInFailure)
         callbacks.signInFailure(error);
-      setError(
-        errors[error.code] === ""
-          ? ""
-          : errors[error.code] || "Something went wrong. Try again later.",
-      );
+      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
       throw new Error(error)
     }
   };
