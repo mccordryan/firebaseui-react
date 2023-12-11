@@ -5,7 +5,7 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   TwitterAuthProvider,
-  getAuth,
+  getMultiFactorResolver,
   signInAnonymously,
   signInWithPopup,
   signInWithRedirect,
@@ -26,7 +26,7 @@ export default function Provider({
   callbacks,
   authType,
   customStyles,
-  resetContinueUrl,
+  continueUrl,
   setSendSMS,
   setEmailLinkOpen,
   setAlert,
@@ -34,7 +34,15 @@ export default function Provider({
   passwordSpecs,
   setVerify,
   setMfaSignIn,
-  setMfaResolver
+  setMfaResolver,
+  displayName,
+  icon,
+  formDisabledStyles,
+  formButtonStyles,
+  formInputStyles,
+  formLabelStyles,
+  formSmallButtonStyles,
+  customErrors
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -97,12 +105,14 @@ export default function Provider({
           callbacks?.signInSuccessWithAuthResult(user);
         });
       } catch (error) {
-        setError(
-          errors[error.code] === ""
-            ? ""
-            : errors[error.code] || "Something went wrong. Try again later.",
-        );
-        callbacks?.signInFailure(error);
+        if (error.code === "auth/multi-factor-auth-required") {
+          setMfaResolver(getMultiFactorResolver(auth, error))
+          setMfaSignIn(true);
+          setSendSMS(true);
+        } else {
+          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+          callbacks?.signInFailure(error);
+        }
       }
     }
   };
@@ -115,7 +125,7 @@ export default function Provider({
       auth={auth}
       callbacks={callbacks}
       authType={authType}
-      resetContinueUrl={resetContinueUrl}
+      continueUrl={continueUrl}
       setAlert={setAlert}
       setError={setError}
       passwordSpecs={passwordSpecs}
@@ -123,6 +133,15 @@ export default function Provider({
       setMfaSignIn={setMfaSignIn}
       setVerify={setVerify}
       setMfaResolver={setMfaResolver}
+      displayName={displayName}
+      fullLabel={fullLabel}
+      customStyles={customStyles}
+      formDisabledStyles={formDisabledStyles}
+      formButtonStyles={formButtonStyles}
+      formInputStyles={formInputStyles}
+      formLabelStyles={formLabelStyles}
+      formSmallButtonStyles={formSmallButtonStyles}
+      customErrors={customErrors}
     />
   ) : (
     <button
@@ -141,7 +160,7 @@ export default function Provider({
       }}
       onClick={submit}
     >
-      {styles.icon}
+      {icon ? icon : styles.icon}
       <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
         {fullLabel ? fullLabel : `Sign in with ${providerName}`}
       </span>

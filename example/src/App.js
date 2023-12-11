@@ -11,8 +11,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 
 export default function Home() {
+
   const UIConfig = {
-    resetContinueUrl: "http://localhost:8080",
+    continueUrl: "http://localhost:8080",
     // requireVerifyEmail: true,
     callbacks: {
       signInSuccessWithAuthResult: function (user) {
@@ -23,8 +24,11 @@ export default function Home() {
         console.error(error);
       },
     },
+    passwordSpecs: { containsSpecialCharacter: true, minCharacters: 8 },
     signInOptions: [
-      { provider: "emailpassword" },
+      {
+        provider: "emailpassword",
+      },
       {
         provider: "google.com",
         customParameters: { prompt: "select_account" },
@@ -36,9 +40,13 @@ export default function Home() {
       "x.com",
       "phonenumber",
       "facebook.com",
-      "emaillink",
+      {
+        provider: "emaillink",
+        fullLabel: "bruh"
+      },
       "anonymous",
     ],
+
   };
 
   const [user, setUser] = useState(auth.currentUser);
@@ -51,10 +59,14 @@ export default function Home() {
     return () => unsubscribe();
   }, [auth]);
 
+
+
   return (
     <main>
       <h1>React FirebaseUI Component Demo</h1>
-      <FirebaseUI auth={auth} config={UIConfig} />
+      <div style={{ width: '25vw' }}>
+        <FirebaseUI auth={auth} config={UIConfig} />
+      </div>
       {user && (
         <div>
           <pre>{JSON.stringify({ user }, null, 2)}</pre>

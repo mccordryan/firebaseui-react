@@ -5,6 +5,7 @@ import PhoneNumber from "./PhoneNumber";
 import EmailLink from "./EmailLink";
 import { isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
 import VerifyEmail from "./VerifyEmail";
+import ResetPassword from "./ResetPassword";
 
 export default function FirebaseUI({
   auth,
@@ -31,8 +32,11 @@ export default function FirebaseUI({
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
+
   const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
   const [mfaSignIn, setMfaSignIn] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
 
@@ -48,6 +52,10 @@ export default function FirebaseUI({
   }, [auth]);
 
   useEffect(() => {
+    console.log(error)
+  }, [error])
+
+  useEffect(() => {
     //open the email verification for signed in but unverified users.
     if (
       config?.requireVerifyEmail &&
@@ -61,10 +69,36 @@ export default function FirebaseUI({
 
   return (
     <>
-      <div style={style} className={className}>
+      <div
+        style={{
+          margin: '0 auto',
+          width: '100%',
+          height: 'fit-content',
+          borderRadius: '0.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '0.75rem',
+          gap: '0.75rem',
+          ...config?.containerStyles
+        }}
+      >
+        {resetPasswordOpen &&
+          <ResetPassword
+            callbacks={config?.callbacks}
+            setAlert={setAlert}
+            setError={setError}
+            auth={auth}
+            passwordSpecs={config?.passwordSpecs}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
+          />}
         {!sendSMS &&
-          !emailLinkOpen &&
-          !verify &&
+          !emailLinkOpen && !verify && !resetPasswordOpen &&
           config?.signInOptions?.map((provider, i) => {
             if (typeof provider == "string") {
               return (
@@ -73,7 +107,9 @@ export default function FirebaseUI({
                   auth={auth}
                   providerId={provider}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={url || config?.resetContinueUrl}
+                  continueUrl={url || config?.continueUrl}
+                  displayName={config?.displayName}
+                  authType={config?.authType}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -82,6 +118,13 @@ export default function FirebaseUI({
                   setVerify={setVerify}
                   setMfaSignIn={setMfaSignIn}
                   setMfaResolver={setMfaResolver}
+                  passwordSpecs={config?.passwordSpecs}
+                  formButtonStyles={config?.formButtonStyles}
+                  formDisabledStyles={config?.formDisabledStyles}
+                  formInputStyles={config?.formInputStyles}
+                  formLabelStyles={config?.formLabelStyles}
+                  formSmallButtonStyles={config?.formSmallButtonStyles}
+                  customErrors={config?.customErrors}
                 />
               );
             } else if (typeof provider == "object") {
@@ -89,10 +132,14 @@ export default function FirebaseUI({
                 <Provider
                   key={i}
                   auth={auth}
+                  authType={config?.authType}
                   providerId={provider?.provider}
                   {...provider}
+                  passwordSpecs={config?.passwordSpecs}
                   callbacks={config?.callbacks}
                   resetContinueUrl={url || config?.resetContinueUrl}
+                  displayName={config?.displayName}
+                  continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -101,6 +148,12 @@ export default function FirebaseUI({
                   setVerify={setVerify}
                   setMfaSignIn={setMfaSignIn}
                   setMfaResolver={setMfaResolver}
+                  formButtonStyles={config?.formButtonStyles}
+                  formDisabledStyles={config?.formDisabledStyles}
+                  formInputStyles={config?.formInputStyles}
+                  formLabelStyles={config?.formLabelStyles}
+                  formSmallButtonStyles={config?.formSmallButtonStyles}
+                  customErrors={config?.customErrors}
                 />
               );
             }
@@ -109,12 +162,22 @@ export default function FirebaseUI({
           <PhoneNumber
             callbacks={config?.callbacks}
             auth={auth}
+            authType={config?.authType}
             setSendSMS={setSendSMS}
             setAlert={setAlert}
             setError={setError}
             user={user}
             mfaSignIn={mfaSignIn}
             mfaResolver={mfaResolver}
+            isResetPassword={isResetPassword}
+            setResetPasswordOpen={setResetPasswordOpen}
+            displayName={config?.displayName}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
           />
         )}
         {verify && (
@@ -128,12 +191,25 @@ export default function FirebaseUI({
         {emailLinkOpen && (
           <EmailLink
             auth={auth}
+            authType={config?.authType}
             setEmailLinkOpen={setEmailLinkOpen}
             resetContinueUrl={url || config?.resetContinueUrl}
+            continueUrl={config?.continueUrl}
             setAlert={setAlert}
             setError={setError}
             user={user}
             setMfaSignIn={setMfaSignIn}
+            setMfaResolver={setMfaResolver}
+            setSendSMS={setSendSMS}
+            isResetPassword={isResetPassword}
+            setResetPasswordOpen={setResetPasswordOpen}
+            displayName={config?.displayName}
+            formButtonStyles={config?.formButtonStyles}
+            formDisabledStyles={config?.formDisabledStyles}
+            formInputStyles={config?.formInputStyles}
+            formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
+            customErrors={config?.customErrors}
           />
         )}
 
