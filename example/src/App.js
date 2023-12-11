@@ -47,10 +47,10 @@ export default function Home() {
       "anonymous",
     ],
 
-    formButtonStyles: { backgroundColor: "#000000" },
-    formDisabledStyles: { fontWeight: '100' },
-    formInputStyles: { backgroundColor: "#00dd00" },
-    formLabelStyles: { fontSize: '20px' }
+    // formButtonStyles: { backgroundColor: "#000000" },
+    // formDisabledStyles: { fontWeight: '100' },
+    // formInputStyles: { backgroundColor: "#00dd00" },
+    // formLabelStyles: { fontSize: '20px' }
   };
 
   const [user, setUser] = useState(auth.currentUser);

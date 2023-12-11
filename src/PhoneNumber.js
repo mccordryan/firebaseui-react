@@ -455,6 +455,8 @@ export default function PhoneNumber({
           fontWeight: '600',
           marginTop: '1.25rem',
           width: '100%',
+          height: '2.25rem',
+          alignItems: 'center',
           transition: 'background-color 150ms',
           backgroundColor: phoneNumberValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
           cursor: phoneNumberValid ? 'pointer' : 'default', // cursor changes based on form validity

@@ -209,9 +209,11 @@ export default function EmailLink({
           type="submit"
           style={{
             color: 'white',
+            alignItems: 'center',
             fontWeight: '600',
             marginTop: '1.25rem',
             width: '100%',
+            height: '2.25rem',
             transition: 'background-color 150ms',
             backgroundColor: formIsValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
             cursor: formIsValid ? 'pointer' : 'default', // cursor changes based on form validity
