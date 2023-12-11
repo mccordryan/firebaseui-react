@@ -11,17 +11,45 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { errors } from "./Errors";
 
+function passwordErrors({ password, passwordSpecs }) {
+  const errors = [];
+  const minCharacters = Math.max(6, passwordSpecs?.minCharacters || 6);
+  if (password.length < minCharacters)
+    errors.push(`be at least ${minCharacters} characters long`);
+
+  if (passwordSpecs?.containsUppercase && !/[A-Z]/.test(password)) {
+    errors.push("contain at least one uppercase character");
+  }
+
+  if (passwordSpecs?.containsLowercase && !/[a-z]/.test(password)) {
+    errors.push("contain at least one lowercase character");
+  }
+
+  if (passwordSpecs?.containsNumber && !/\d/.test(password)) {
+    errors.push("contain at least one number");
+  }
+
+  if (
+    passwordSpecs?.containsSpecialCharacter &&
+    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  ) {
+    errors.push("contain at least one special character");
+  }
+
+  return errors;
+}
+
 export default function EmailPassword({
   auth,
   callbacks,
-  authType,
+  authType = "both",
   setAlert,
   setError,
   resetContinueUrl,
   passwordSpecs,
   setSendSMS,
   setMfaSignIn,
-  setMfaResolver
+  setMfaResolver,
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,34 +73,33 @@ export default function EmailPassword({
   };
 
   const isPasswordValid = function () {
-    let isValid = password.length > 5; //basic firebase requirement
-
-    if (passwordSpecs?.minCharacters) {
-      isValid = isValid && password.length >= passwordSpecs?.minCharacters;
-    }
-
-    if (passwordSpecs?.containsUppercase) {
-      isValid = isValid && /[A-Z]/.test(password);
-    }
-
-    if (passwordSpecs?.containsLowercase) {
-      isValid = isValid && /[a-z]/.test(password);
-    }
-
-    if (passwordSpecs?.containsNumber) {
-      isValid = isValid && /\d/.test(password);
-    }
-
-    if (passwordSpecs?.containsSpecialCharacter) {
-      isValid =
-        isValid && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    }
-
-    return isValid;
+    return passwordErrors({ password, passwordSpecs }).length === 0;
   };
 
-  //allow sign in AND sign up if not specified
-  if (!authType) authType = "both";
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setAlert(null);
+
+    if (!isEmailValid()) {
+      setAlert("Please enter a valid email address.");
+      return;
+    }
+    if (!isPasswordValid()) {
+      setAlert("Please enter a valid password.");
+      return;
+    }
+
+    if (resetPassword) {
+      await sendPasswordResetEmail(auth, email, {
+        handleCodeInApp: !resetContinueUrl,
+        url: resetContinueUrl,
+      });
+
+      setAlert(`Check your ${email} email for a link to reset your password.`);
+    } else {
+      await authenticateUser();
+    }
+  };
 
   const authenticateUser = async () => {
     //TODO error handling
@@ -93,10 +120,11 @@ export default function EmailPassword({
             },
           );
         } catch (signUpError) {
+          console.log(signUpError);
           if (signUpError.code === "auth/email-already-in-use") {
             //SIGN IN PROBLEM
             if (signInError.code === "auth/multi-factor-auth-required") {
-              setMfaResolver(getMultiFactorResolver(auth, signInError))
+              setMfaResolver(getMultiFactorResolver(auth, signInError));
               setMfaSignIn(true);
               setSendSMS(true);
             } else {
@@ -104,17 +132,18 @@ export default function EmailPassword({
                 errors[signInError.code] === ""
                   ? ""
                   : errors[signInError.code] ||
-                  "Something went wrong. Try again later.",
+                      "Something went wrong. Try again later.",
               );
-              if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
+              if (callbacks?.signInFailure)
+                callbacks?.signInFailure(signInError);
               throw new Error(signInError.code);
             }
           } else if (signUpError.code) {
-
-            setError(errors[signUpError.code] === ""
-              ? ""
-              : errors[signUpError.code] ||
-              "Something went wrong. Try again later.",
+            setError(
+              errors[signUpError.code] === ""
+                ? ""
+                : errors[signUpError.code] ||
+                    "Something went wrong. Try again later.",
             );
             if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError);
             throw new Error(signUpError.code);
@@ -146,112 +175,102 @@ export default function EmailPassword({
     }
   };
 
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!formIsValid) {
-      if (!isEmailValid()) {
-        setAlert("Please enter a valid email address.");
-      } else {
-        setAlert("Please enter a valid password.");
-      }
-
-      return;
-    }
-
-    if (resetPassword) {
-      await sendPasswordResetEmail(auth, email, {
-        handleCodeInApp: true,
-        url: resetContinueUrl,
-      }).then(() => {
-        setAlert(`A reset-password email has been sent to ${email}.`);
-      });
-    } else {
-      await authenticateUser();
-    }
-  };
-
   return (
-    <form style={{
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginTop: '1rem',
-      marginBottom: '1rem',
-      gap: '1rem'
-    }}>
+    <form
+      onSubmit={onSubmit}
+      style={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "1rem",
+        marginBottom: "1rem",
+        gap: "1rem",
+      }}
+    >
       {resetPassword && (
         <button
           onClick={() => setResetPassword(false)}
           style={{
-            width: '100%',
-            textAlign: 'left',
-            fontSize: '0.875rem',
-            color: '#2b6cb0', // blue-800
-            border: 'none',
-            cursor: 'pointer',
-            backgroundColor: '#fff'
+            width: "100%",
+            textAlign: "left",
+            fontSize: "0.875rem",
+            color: "#2b6cb0", // blue-800
+            border: "none",
+            cursor: "pointer",
+            backgroundColor: "#fff",
           }}
         >
           Go back
         </button>
       )}
-      <div style={{
-        fontSize: '0.875rem',
-        fontWeight: '500',
-        color: '#1a202c', // gray-900
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-        width: '100%'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+      <div
+        style={{
+          fontSize: "0.875rem",
+          fontWeight: "500",
+          color: "#1a202c", // gray-900
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <label htmlFor="email">Email Address</label>
         </div>
         <input
           data-testid="emailinput"
           ref={emailRef}
+          autoComplete="email"
           id="email"
           required
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           style={{
-            border: '1px solid #e2e8f0', // gray-300
-            borderRadius: '0.375rem',
-            padding: '0.5rem 0.75rem',
-            width: '100%'
+            border: "1px solid #e2e8f0", // gray-300
+            borderRadius: "0.375rem",
+            padding: "0.5rem 0.75rem",
+            width: "100%",
           }}
         />
       </div>
       {!resetPassword && (
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: '500',
-          color: '#1a202c', // gray-900
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-          width: '100%'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
+        <div
+          style={{
+            fontSize: "0.875rem",
+            fontWeight: "500",
+            color: "#1a202c", // gray-900
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <label htmlFor="password">Password</label>
             <button
+              type="button"
+              tabIndex={10}
               onClick={() => setResetPassword(true)}
               style={{
-                fontSize: '0.875rem',
-                color: '#2b6cb0',
-                border: 'none',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
+                fontSize: "0.875rem",
+                color: "#2b6cb0",
+                border: "none",
+                backgroundColor: "#fff",
+                cursor: "pointer",
               }}
             >
               Forgot Password?
@@ -262,24 +281,27 @@ export default function EmailPassword({
               data-testid="passwordInput"
               id="password"
               type="password"
+              autoComplete={true ? "current-password" : "new-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{
-                border: '1px solid #e2e8f0', // gray-300
-                borderRadius: '0.375rem',
-                padding: '0.5rem 0.75rem',
-                width: '100%'
+                border: "1px solid #e2e8f0", // gray-300
+                borderRadius: "0.375rem",
+                padding: "0.5rem 0.75rem",
+                width: "100%",
               }}
             />
             {showPassHelper && (
-              <div style={{
-                width: '20%',
-                padding: '0.5rem',
-                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                borderRadius: '0.375rem',
-                position: 'absolute',
-                backgroundColor: 'white'
-              }}>
+              <div
+                style={{
+                  width: "20%",
+                  padding: "0.5rem",
+                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                  borderRadius: "0.375rem",
+                  position: "absolute",
+                  backgroundColor: "white",
+                }}
+              >
                 <p>Your password must contain:</p>
                 <ul>
                   {password.length < (passwordSpecs?.minCharacters || 6) && (
@@ -307,23 +329,22 @@ export default function EmailPassword({
       <button
         type="submit"
         style={{
-          color: 'white',
-          fontWeight: '600',
-          marginTop: '1.25rem',
-          width: '100%',
-          transition: 'background-color 150ms',
-          backgroundColor: formIsValid ? '#60a5fa' : '#9ca3af', // bg-blue-400 for valid, bg-gray-400 for invalid
-          cursor: formIsValid ? 'pointer' : 'default', // cursor changes based on form validity
-          ...(formIsValid ? { ':hover': { backgroundColor: '#3b82f6' } } : {}), // hover effect for valid form
-          display: 'flex',
-          gap: '0.75rem',
-          padding: '0.5rem 0.75rem',
-          borderRadius: '0.375rem',
-          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-          justifyContent: 'center',
-          border: 'none',
+          color: "white",
+          fontWeight: "600",
+          marginTop: "1.25rem",
+          width: "100%",
+          transition: "background-color 150ms",
+          backgroundColor: formIsValid ? "#60a5fa" : "#9ca3af", // bg-blue-400 for valid, bg-gray-400 for invalid
+          cursor: formIsValid ? "pointer" : "default", // cursor changes based on form validity
+          ...(formIsValid ? { ":hover": { backgroundColor: "#3b82f6" } } : {}), // hover effect for valid form
+          display: "flex",
+          gap: "0.75rem",
+          padding: "0.5rem 0.75rem",
+          borderRadius: "0.375rem",
+          boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+          justifyContent: "center",
+          border: "none",
         }}
-        onClick={submit}
       >
         {resetPassword ? "Reset Password" : "Sign In With Email"}
       </button>

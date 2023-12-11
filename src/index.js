@@ -6,7 +6,28 @@ import EmailLink from "./EmailLink";
 import { isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
 import VerifyEmail from "./VerifyEmail";
 
-export default function FirebaseUI({ auth, config }) {
+export default function FirebaseUI({
+  auth,
+  url,
+  config = { signInOptions: [{ provider: "emailpassword" }] },
+  style = {
+    margin: "0 auto",
+    backgroundColor: "white",
+    width: "25%",
+    height: "fit-content",
+    borderRadius: "0.5rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "0.75rem",
+    gap: "0.75rem",
+  },
+  className = "",
+}) {
+  if (!auth) {
+    throw new Error("FirebaseUI requires 'auth' prop.");
+  }
+
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
@@ -23,35 +44,27 @@ export default function FirebaseUI({ auth, config }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
-
     return () => unsubscribe();
   }, [auth]);
 
   useEffect(() => {
     //open the email verification for signed in but unverified users.
-    if (config?.requireVerifyEmail && user && user.providerData[0].providerId == "password" && !user?.emailVerified) {
+    if (
+      config?.requireVerifyEmail &&
+      user &&
+      user.providerData[0].providerId == "password" &&
+      !user?.emailVerified
+    ) {
       setVerify(true);
     }
-  }, [user])
+  }, [user]);
 
   return (
     <>
-      <div
-        style={{
-          margin: '0 auto',
-          backgroundColor: 'white',
-          width: '25%',
-          height: 'fit-content',
-          borderRadius: '0.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '0.75rem',
-          gap: '0.75rem'
-        }}
-      >
+      <div style={style} className={className}>
         {!sendSMS &&
-          !emailLinkOpen && !verify &&
+          !emailLinkOpen &&
+          !verify &&
           config?.signInOptions?.map((provider, i) => {
             if (typeof provider == "string") {
               return (
@@ -60,7 +73,7 @@ export default function FirebaseUI({ auth, config }) {
                   auth={auth}
                   providerId={provider}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={config?.resetContinueUrl}
+                  resetContinueUrl={url || config?.resetContinueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -79,7 +92,7 @@ export default function FirebaseUI({ auth, config }) {
                   providerId={provider?.provider}
                   {...provider}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={config?.resetContinueUrl}
+                  resetContinueUrl={url || config?.resetContinueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -105,13 +118,18 @@ export default function FirebaseUI({ auth, config }) {
           />
         )}
         {verify && (
-          <VerifyEmail user={user} setAlert={setAlert} setError={setError} setSendSMS={setSendSMS} />
+          <VerifyEmail
+            user={user}
+            setAlert={setAlert}
+            setError={setError}
+            setSendSMS={setSendSMS}
+          />
         )}
         {emailLinkOpen && (
           <EmailLink
             auth={auth}
             setEmailLinkOpen={setEmailLinkOpen}
-            resetContinueUrl={config?.resetContinueUrl}
+            resetContinueUrl={url || config?.resetContinueUrl}
             setAlert={setAlert}
             setError={setError}
             user={user}
@@ -124,32 +142,32 @@ export default function FirebaseUI({ auth, config }) {
           <div
             onClick={() => setAlert("")}
             style={{
-              padding: '0.25rem',
-              width: '100%',
-              backgroundColor: '#fefcbf', // yellow-100
-              border: '1px solid #fef9c3', // yellow-200
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              borderRadius: '0.375rem',
-              display: 'flex',
-              flexDirection: 'column'
+              padding: "0.25rem",
+              width: "100%",
+              backgroundColor: "#fefcbf", // yellow-100
+              border: "1px solid #fef9c3", // yellow-200
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              borderRadius: "0.375rem",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <p style={{ padding: '0.25rem' }}>{alert}</p>
+            <p style={{ padding: "0.25rem" }}>{alert}</p>
           </div>
         )}
         {error && (
           <div
             onClick={() => setError("")}
             style={{
-              padding: '0.25rem',
-              width: '100%',
-              backgroundColor: '#fed7d7', // red-100
-              border: '1px solid #fecaca', // red-200
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              borderRadius: '0.375rem'
+              padding: "0.25rem",
+              width: "100%",
+              backgroundColor: "#fed7d7", // red-100
+              border: "1px solid #fecaca", // red-200
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              borderRadius: "0.375rem",
             }}
           >
-            <p style={{ padding: '0.25rem' }}>{error}</p>
+            <p style={{ padding: "0.25rem" }}>{error}</p>
           </div>
         )}
       </div>
