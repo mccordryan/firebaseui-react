@@ -25,12 +25,12 @@ export default function EmailPassword({
   setMfaSignIn,
   setMfaResolver,
   displayName,
-  customStyles,
   fullLabel,
   formButtonStyles,
   formDisabledStyles,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  formSmallButtonStyles
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -243,8 +243,9 @@ export default function EmailPassword({
               fontSize: '0.875rem',
               color: '#2b6cb0',
               border: 'none',
-              backgroundColor: '#fff',
+              backgroundColor: "#fff",
               cursor: 'pointer',
+              ...formSmallButtonStyles
             }}
           >
             Cancel
@@ -289,9 +290,10 @@ export default function EmailPassword({
               style={{
                 fontSize: '0.875rem',
                 color: '#2b6cb0',
+                backgroundColor: "#fff",
                 border: 'none',
-                backgroundColor: '#fff',
                 cursor: 'pointer',
+                ...formSmallButtonStyles
               }}
             >
               Forgot Password?

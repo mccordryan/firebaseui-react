@@ -40,7 +40,8 @@ export default function Provider({
   formDisabledStyles,
   formButtonStyles,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  formSmallButtonStyles
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -142,6 +143,7 @@ export default function Provider({
       formButtonStyles={formButtonStyles}
       formInputStyles={formInputStyles}
       formLabelStyles={formLabelStyles}
+      formSmallButtonStyles={formSmallButtonStyles}
     />
   ) : (
     <button

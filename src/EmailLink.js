@@ -25,7 +25,8 @@ export default function EmailLink({
   formButtonStyles,
   formDisabledStyles,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  formSmallButtonStyles
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -163,8 +164,9 @@ export default function EmailLink({
                 fontSize: '0.875rem',
                 color: '#2b6cb0',
                 border: 'none',
-                backgroundColor: '#fff',
+                backgroundColor: "#fff",
                 cursor: 'pointer',
+                ...formSmallButtonStyles
               }}
             >
               Cancel

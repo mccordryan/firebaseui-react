@@ -47,10 +47,6 @@ export default function Home() {
       "anonymous",
     ],
 
-    // formButtonStyles: { backgroundColor: "#000000" },
-    // formDisabledStyles: { fontWeight: '100' },
-    // formInputStyles: { backgroundColor: "#00dd00" },
-    // formLabelStyles: { fontSize: '20px' }
   };
 
   const [user, setUser] = useState(auth.currentUser);
@@ -64,9 +60,11 @@ export default function Home() {
   }, [auth]);
 
   return (
-    <main>
+    <main style={{ backgroundColor: "#2e2e2e" }}>
       <h1>React FirebaseUI Component Demo</h1>
-      <FirebaseUI auth={auth} config={UIConfig} />
+      <div style={{ width: '25vw' }}>
+        <FirebaseUI auth={auth} config={UIConfig} />
+      </div>
       {user && (
         <div>
           <pre>{JSON.stringify({ user }, null, 2)}</pre>

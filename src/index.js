@@ -46,15 +46,15 @@ export default function FirebaseUI({ auth, config }) {
       <div
         style={{
           margin: '0 auto',
-          backgroundColor: 'white',
-          width: '25%',
+          width: '100%',
           height: 'fit-content',
           borderRadius: '0.5rem',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           padding: '0.75rem',
-          gap: '0.75rem'
+          gap: '0.75rem',
+          ...config?.containerStyles
         }}
       >
         {resetPasswordOpen &&
@@ -68,6 +68,7 @@ export default function FirebaseUI({ auth, config }) {
             formDisabledStyles={config?.formDisabledStyles}
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
           />}
         {!sendSMS &&
           !emailLinkOpen && !verify && !resetPasswordOpen &&
@@ -95,6 +96,7 @@ export default function FirebaseUI({ auth, config }) {
                   formDisabledStyles={config?.formDisabledStyles}
                   formInputStyles={config?.formInputStyles}
                   formLabelStyles={config?.formLabelStyles}
+                  formSmallButtonStyles={config?.formSmallButtonStyles}
                 />
               );
             } else if (typeof provider == "object") {
@@ -121,6 +123,7 @@ export default function FirebaseUI({ auth, config }) {
                   formDisabledStyles={config?.formDisabledStyles}
                   formInputStyles={config?.formInputStyles}
                   formLabelStyles={config?.formLabelStyles}
+                  formSmallButtonStyles={config?.formSmallButtonStyles}
                 />
               );
             }
@@ -143,6 +146,7 @@ export default function FirebaseUI({ auth, config }) {
             formDisabledStyles={config?.formDisabledStyles}
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
           />
         )}
         {verify && (
@@ -167,6 +171,7 @@ export default function FirebaseUI({ auth, config }) {
             formDisabledStyles={config?.formDisabledStyles}
             formInputStyles={config?.formInputStyles}
             formLabelStyles={config?.formLabelStyles}
+            formSmallButtonStyles={config?.formSmallButtonStyles}
           />
         )}
 

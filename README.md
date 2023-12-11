@@ -181,6 +181,17 @@ const config = {
 };
 ```
 
+**Overriding Container Styles**
+
+You can override the styles of the top-level container component by adding a `containerStyles` object of React Inline Styles (see above) to your top level configuration:
+
+```js
+const config = {
+  signInOptions: ["google.com"],
+  containerStyles: { backgroundColor: "#2e2e2e" }, // A dark mode color
+};
+```
+
 **Overriding Form Styles**
 
 To override the styles of inputs, labels, and form buttons, you can pass an object of React Inline Styles (see above) to your top level configuration. The following is a list of valid form style fields:
@@ -189,6 +200,7 @@ To override the styles of inputs, labels, and form buttons, you can pass an obje
 - `formDisabledStyles` overrides the gray disabled form button.
 - `formInputStyles` overrides default <input> styles
 - `formLabelStyles` overrides default <label> styles
+- `formSmallButtonStyles` overrides small form buttons (Forgot Password? and Cancel buttons)
 
 ```js
 const config = {
@@ -197,6 +209,7 @@ const config = {
   formDisabledStyles: { backgroundColor: "red" },
   formInputStyles: { padding: "5px" },
   formLabelStyles: { fontWeight: "700" },
+  formSmallButtonStyles: { textDecoration: "underline" },
 };
 ```
 

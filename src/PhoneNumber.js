@@ -24,7 +24,8 @@ export default function PhoneNumber({
   formButtonStyles,
   formDisabledStyles,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  formSmallButtonStyles
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -230,6 +231,7 @@ export default function PhoneNumber({
                   border: 'none',
                   backgroundColor: '#fff',
                   cursor: 'pointer',
+                  ...formSmallButtonStyles
                 }}
               >
                 Cancel
@@ -420,6 +422,7 @@ export default function PhoneNumber({
                 border: 'none',
                 backgroundColor: '#fff',
                 cursor: 'pointer',
+                ...formSmallButtonStyles
               }}
             >
               Cancel
