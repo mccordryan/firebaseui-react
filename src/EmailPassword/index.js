@@ -41,12 +41,20 @@ export default function EmailPassword({
   authType = "both",
   setAlert,
   setError,
-  resetContinueUrl,
+  continueUrl,
   passwordSpecs,
   setSendSMS,
   setMfaSignIn,
+  fullLabel,
+  formDisabledStyles,
+  formButtonStyles,
+  formInputStyles,
+  formLabelStyles,
+  formSmallButtonStyles,
+  customErrors
   // setMfaResolver,
 }) {
+
   const [loading, setLoading] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -83,24 +91,29 @@ export default function EmailPassword({
             // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
             setResolver(getMultiFactorResolver(auth, err2));
           } else {
+            // signing in didn't work for a different reason
             setError(errors[code2] || err2.message);
+            setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);
           }
         }
       } else {
         // creating an account didn't work for some other reason
-        setError(errors[code] || err.message);
+        setError(customErrors && customErrors[code] !== undefined ? customErrors[code] : errors[code] || err.message);
       }
     }
   }
 
   const [resetLinkSent, setResetLinkSent] = useState(false);
+
   async function onResetPassword() {
     setLoading(true);
-    const url = new URL(resetContinueUrl);
+    const url = new URL(continueUrl);
     // add email query param to url
     url.searchParams.append("email", email);
+    url.searchParams.append("resetPassword", "true");
+
     await sendPasswordResetEmail(auth, email, {
-      handleCodeInApp: !resetContinueUrl,
+      handleCodeInApp: !continueUrl,
       url: url.toString(),
     });
     setResetLinkSent(true);
@@ -129,6 +142,8 @@ export default function EmailPassword({
         labelStyle={labelStyle}
         descriptionStyle={descriptionStyle}
         disabled={loading}
+        formInputStyles={formInputStyles}
+        formLabelStyles={formLabelStyles}
       />
 
       <PasswordField
@@ -142,15 +157,17 @@ export default function EmailPassword({
         newPassword={false}
         onResetPassword={onResetPassword}
         disabled={loading}
+        formInputStyles={formInputStyles}
+        formLabelStyles={formLabelStyles}
       />
 
-      <button disabled={loading} type="submit" style={buttonStyle}>
+      <button disabled={loading} type="submit" style={{ ...buttonStyle, ...formButtonStyles }}>
         {loading ? "Loading..." : "Log in or create account"}
       </button>
       {false && (
         <button
           type="button"
-          style={cancelButtonStyle}
+          style={{ ...cancelButtonStyle, ...formSmallButtonStyles }}
           onClick={() => setEmailExists(null)}
         >
           Cancel

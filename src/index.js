@@ -29,6 +29,8 @@ export default function FirebaseUI({
     throw new Error("FirebaseUI requires 'auth' prop.");
   }
 
+  const queryParams = new URLSearchParams(window.location.search)
+
   const [emailLinkOpen, setEmailLinkOpen] = useState(
     isSignInWithEmailLink(auth, window.location.href),
   );
@@ -137,7 +139,7 @@ export default function FirebaseUI({
                   {...provider}
                   passwordSpecs={config?.passwordSpecs}
                   callbacks={config?.callbacks}
-                  resetContinueUrl={url || config?.resetContinueUrl}
+                  continueUrl={url || config?.continueUrl}
                   displayName={config?.displayName}
                   continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
@@ -193,7 +195,7 @@ export default function FirebaseUI({
             auth={auth}
             authType={config?.authType}
             setEmailLinkOpen={setEmailLinkOpen}
-            resetContinueUrl={url || config?.resetContinueUrl}
+            continueUrl={url || config?.continueUrl}
             continueUrl={config?.continueUrl}
             setAlert={setAlert}
             setError={setError}

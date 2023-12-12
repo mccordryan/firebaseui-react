@@ -38,6 +38,8 @@ export default function PasswordField({
   descriptionStyle,
   newPassword = false,
   onResetPassword = null,
+  formInputStyles,
+  formLabelStyles
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -59,10 +61,11 @@ export default function PasswordField({
           justifyContent: "space-between",
         }}
       >
-        <label htmlFor="password" style={labelStyle}>
+        <label htmlFor="password" style={{ labelStyle, ...formLabelStyles }}>
           Password
         </label>
         {typeof onResetPassword === "function" && (
+          //MERGEHERE
           <div style={{ fontSize: "0.875rem" }}>
             <button
               style={{ fontWeight: "600", color: "#2563eb" }}
@@ -73,8 +76,8 @@ export default function PasswordField({
                 await onResetPassword();
                 setResettingPassword(false);
               }}
-              // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
-              // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
+            // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
+            // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
             >
               {resettingPassword ? "Sending..." : "Send reset link"}
             </button>
@@ -88,7 +91,7 @@ export default function PasswordField({
           type={show ? "text" : "password"}
           name="password"
           id="password"
-          style={inputStyle}
+          style={{ ...inputStyle, ...formInputStyles }}
           placeholder={newPassword ? "create a new password" : "your password"}
           autoComplete={newPassword ? "new-password" : "current-password"}
           aria-describedby="password-description"

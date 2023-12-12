@@ -135,7 +135,6 @@ export default function Provider({
       setMfaResolver={setMfaResolver}
       displayName={displayName}
       fullLabel={fullLabel}
-      customStyles={customStyles}
       formDisabledStyles={formDisabledStyles}
       formButtonStyles={formButtonStyles}
       formInputStyles={formInputStyles}

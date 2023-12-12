@@ -47,6 +47,10 @@ export default function Home() {
       "anonymous",
     ],
 
+    formButtonStyles: { backgroundColor: "red" },
+    formDisabledStyles: { backgroundColor: "yellow" },
+    formInputStyles: { backgroundColor: "#ebebeb" }
+
   };
 
   const [user, setUser] = useState(auth.currentUser);

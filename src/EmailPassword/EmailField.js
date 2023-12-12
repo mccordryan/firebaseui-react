@@ -8,6 +8,8 @@ export default function EmailField({
   labelStyle,
   descriptionStyle,
   disabled = false,
+  formInputStyles,
+  formLabelStyles
 }) {
   const [isDirty, setIsDirty] = useState(false);
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -16,7 +18,7 @@ export default function EmailField({
 
   return (
     <div>
-      <label htmlFor="email" style={labelStyle}>
+      <label htmlFor="email" style={{ ...labelStyle, ...formLabelStyles }}>
         Email address
       </label>
       <div style={{ marginTop: "0.5rem" }}>
@@ -25,7 +27,7 @@ export default function EmailField({
           type="email"
           name="email"
           id="email"
-          style={inputStyle}
+          style={{ ...inputStyle, ...formInputStyles }}
           placeholder="you@example.com"
           autoComplete="email"
           aria-describedby="email-description"
