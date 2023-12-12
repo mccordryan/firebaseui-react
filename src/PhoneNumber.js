@@ -19,7 +19,6 @@ export default function PhoneNumber({
   auth,
   isResetPassword,
   setResetPasswordOpen,
-  authType,
   displayName,
   formButtonStyles,
   formDisabledStyles,
@@ -371,7 +370,7 @@ export default function PhoneNumber({
 
             </div>
 
-            {authType === "signUp" && displayName &&
+            {displayName &&
               <div style={{ marginTop: '0.25rem' }}>
                 {displayName == "required" ? <label style={{
                   fontSize: '0.875rem',

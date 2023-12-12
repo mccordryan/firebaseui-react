@@ -24,7 +24,7 @@ export default function Home() {
         console.error(error);
       },
     },
-    passwordSpecs: { containsSpecialCharacter: true, minCharacters: 8 },
+    passwordSpecs: { minCharacters: 8, },
     signInOptions: [
       {
         provider: "emailpassword",
@@ -47,9 +47,9 @@ export default function Home() {
       "anonymous",
     ],
 
-    formButtonStyles: { backgroundColor: "red" },
-    formDisabledStyles: { backgroundColor: "yellow" },
-    formInputStyles: { backgroundColor: "#ebebeb" }
+    // formButtonStyles: { backgroundColor: "red" },
+    // formDisabledStyles: { backgroundColor: "yellow" },
+    // formInputStyles: { backgroundColor: "#ebebeb" }
 
   };
 

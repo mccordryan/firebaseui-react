@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 export default function EmailField({
   value,
@@ -9,12 +10,17 @@ export default function EmailField({
   descriptionStyle,
   disabled = false,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  setEmailValid
 }) {
   const [isDirty, setIsDirty] = useState(false);
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const inputStyle = isDirty && !isValid ? invalidInputStyle : validInputStyle;
+
+  useEffect(() => {
+    setEmailValid(isValid)
+  }, [value])
 
   return (
     <div>

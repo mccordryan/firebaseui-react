@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 function passwordErrors({ password, passwordSpecs }) {
   const errors = [];
@@ -28,6 +29,45 @@ function passwordErrors({ password, passwordSpecs }) {
   return errors;
 }
 
+function formatPasswordRequirements(passwordSpecs) {
+  let requirements = [];
+
+  if (passwordSpecs?.minCharacters) {
+    requirements.push(`at least ${passwordSpecs.minCharacters} characters`);
+  }
+
+  let additionalReqs = [];
+
+  if (passwordSpecs?.containsUppercase) {
+    additionalReqs.push('one uppercase letter');
+  }
+
+  if (passwordSpecs?.containsLowercase) {
+    additionalReqs.push('one lowercase letter');
+  }
+
+  if (passwordSpecs?.containsSpecialCharacter) {
+    additionalReqs.push('one special character');
+  }
+
+  if (passwordSpecs?.containsNumber) {
+    additionalReqs.push('one number');
+  }
+
+  if (additionalReqs.length > 0) {
+    const additionalReqString = additionalReqs.length > 1
+      ? additionalReqs.slice(0, -1).join(', ') + ', and ' + additionalReqs.slice(-1)
+      : additionalReqs[0];
+    requirements.push(`and contain at least ${additionalReqString}`);
+  }
+
+  let formattedString = 'Strong passwords have ' + requirements.join(' ') + '.';
+
+  return formattedString;
+}
+
+
+
 export default function PasswordField({
   value,
   setValue,
@@ -39,7 +79,8 @@ export default function PasswordField({
   newPassword = false,
   onResetPassword = null,
   formInputStyles,
-  formLabelStyles
+  formLabelStyles,
+  setPasswordValid,
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -50,6 +91,10 @@ export default function PasswordField({
     passwordErrors({ password: value, passwordSpecs: specs }).length === 0;
 
   const inputStyle = isDirty && !isValid ? invalidInputStyle : validInputStyle;
+
+  useEffect(() => {
+    setPasswordValid(isValid);
+  }, [value])
 
   return (
     <div>
@@ -65,7 +110,6 @@ export default function PasswordField({
           Password
         </label>
         {typeof onResetPassword === "function" && (
-          //MERGEHERE
           <div style={{ fontSize: "0.875rem" }}>
             <button
               style={{ fontWeight: "600", color: "#2563eb" }}
@@ -104,7 +148,7 @@ export default function PasswordField({
       <p style={descriptionStyle} id="password-description">
         {isDirty &&
           !isValid &&
-          "Strong passwords have at least 6 characters and a mix of letters, numbers, and symbols."}
+          formatPasswordRequirements(specs)}
         &nbsp;
       </p>
     </div>

@@ -45,10 +45,10 @@ export default function EmailPassword({
   passwordSpecs,
   setSendSMS,
   setMfaSignIn,
-  fullLabel,
   formDisabledStyles,
   formButtonStyles,
   formInputStyles,
+  displayName,
   formLabelStyles,
   formSmallButtonStyles,
   customErrors
@@ -58,9 +58,24 @@ export default function EmailPassword({
   const [loading, setLoading] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const [email, setEmail] = useState(urlParams.get("email") || "");
 
+  const [email, setEmail] = useState(urlParams.get("email") || "");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [formIsValid, setFormIsValid] = useState(false);
+
+
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
+
+  useEffect(() => {
+    setFormIsValid(
+      passwordValid && emailValid && (displayName === "required" ? name.length > 0 : true),
+    );
+
+  }, [emailValid, passwordValid, name]);
+
+
 
   // MFA Resolver
   const [resolver, setResolver] = useState(false);
@@ -70,35 +85,53 @@ export default function EmailPassword({
     if (loading) return;
     setLoading(true);
 
-    // first try to create an account
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setLoading(false);
-      return;
-    } catch (err) {
-      // creating an account didn't work. Why not?
+    if (authType === "signIn") {
+      try {
+        await signInWithEmailAndPassword(auth, email, password).then((userCred) => {
+          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+        })
+      } catch (error) {
+        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.message);
+        if (callbacks?.signInFailure) callbacks.signInFailure(error)
+      }
+    } else {
 
-      const code = codeFromError(err);
-      if (code === "auth/email-already-in-use") {
-        // because the user already has an account! Let's try signing them in...
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          setLoading(false);
-          return;
-        } catch (err2) {
-          const code2 = codeFromError(err2);
-          if (code2 === "auth/multi-factor-auth-required") {
-            // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
-            setResolver(getMultiFactorResolver(auth, err2));
-          } else {
-            // signing in didn't work for a different reason
-            setError(errors[code2] || err2.message);
-            setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);
+      // first try to create an account
+      try {
+        await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
+          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+        })
+        setLoading(false);
+        return;
+      } catch (err) {
+        // creating an account didn't work. Why not?
+
+        const code = codeFromError(err);
+
+        if (code === "auth/email-already-in-use" && authType !== "signUp") {
+          // because the user already has an account! Let's try signing them in...
+          try {
+            await signInWithEmailAndPassword(auth, email, password).then((userCred) => {
+              if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+            })
+            setLoading(false);
+            return;
+          } catch (err2) {
+            const code2 = codeFromError(err2);
+            if (code2 === "auth/multi-factor-auth-required") {
+              // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
+              setResolver(getMultiFactorResolver(auth, err2));
+            } else {
+              // signing in didn't work for a different reason
+              setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);
+              if (callbacks?.signInFailure) callbacks.signInFailure(err2)
+            }
           }
+        } else {
+          // creating an account didn't work for some other reason
+          setError(customErrors && customErrors[code] !== undefined ? customErrors[code] : errors[code] || err.message);
+          if (callbacks?.signInFailure) callbacks.signInFailure(err)
         }
-      } else {
-        // creating an account didn't work for some other reason
-        setError(customErrors && customErrors[code] !== undefined ? customErrors[code] : errors[code] || err.message);
       }
     }
   }
@@ -144,6 +177,7 @@ export default function EmailPassword({
         disabled={loading}
         formInputStyles={formInputStyles}
         formLabelStyles={formLabelStyles}
+        setEmailValid={setEmailValid}
       />
 
       <PasswordField
@@ -159,15 +193,16 @@ export default function EmailPassword({
         disabled={loading}
         formInputStyles={formInputStyles}
         formLabelStyles={formLabelStyles}
+        setPasswordValid={setPasswordValid}
       />
 
-      <button disabled={loading} type="submit" style={{ ...buttonStyle, ...formButtonStyles }}>
+      <button disabled={loading || !formIsValid} type="submit" style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
         {loading ? "Loading..." : "Log in or create account"}
       </button>
       {false && (
         <button
           type="button"
-          style={{ ...cancelButtonStyle, ...formSmallButtonStyles }}
+          style={{ ...cancelButtonStyle, ...formSmallButtonStyles, }}
           onClick={() => setEmailExists(null)}
         >
           Cancel

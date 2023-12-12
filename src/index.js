@@ -111,7 +111,6 @@ export default function FirebaseUI({
                   callbacks={config?.callbacks}
                   continueUrl={url || config?.continueUrl}
                   displayName={config?.displayName}
-                  authType={config?.authType}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -134,14 +133,12 @@ export default function FirebaseUI({
                 <Provider
                   key={i}
                   auth={auth}
-                  authType={config?.authType}
                   providerId={provider?.provider}
                   {...provider}
                   passwordSpecs={config?.passwordSpecs}
                   callbacks={config?.callbacks}
                   continueUrl={url || config?.continueUrl}
                   displayName={config?.displayName}
-                  continueUrl={config?.continueUrl}
                   setSendSMS={setSendSMS}
                   setEmailLinkOpen={setEmailLinkOpen}
                   setAlert={setAlert}
@@ -164,7 +161,6 @@ export default function FirebaseUI({
           <PhoneNumber
             callbacks={config?.callbacks}
             auth={auth}
-            authType={config?.authType}
             setSendSMS={setSendSMS}
             setAlert={setAlert}
             setError={setError}
@@ -193,10 +189,8 @@ export default function FirebaseUI({
         {emailLinkOpen && (
           <EmailLink
             auth={auth}
-            authType={config?.authType}
             setEmailLinkOpen={setEmailLinkOpen}
             continueUrl={url || config?.continueUrl}
-            continueUrl={config?.continueUrl}
             setAlert={setAlert}
             setError={setError}
             user={user}
