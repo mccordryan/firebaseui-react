@@ -11,19 +11,6 @@ export default function FirebaseUI({
   auth,
   url,
   config = { signInOptions: [{ provider: "emailpassword" }] },
-  style = {
-    margin: "0 auto",
-    backgroundColor: "white",
-    width: "25%",
-    height: "fit-content",
-    borderRadius: "0.5rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "0.75rem",
-    gap: "0.75rem",
-  },
-  className = "",
 }) {
   if (!auth) {
     throw new Error("FirebaseUI requires 'auth' prop.");
