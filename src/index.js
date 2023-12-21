@@ -163,6 +163,8 @@ export default function FirebaseUI({
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
             customErrors={config?.customErrors}
+            setMfaResolver={setMfaResolver}
+            setMfaSignIn={setMfaSignIn}
           />
         )}
         {verify && (

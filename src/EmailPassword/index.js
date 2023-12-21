@@ -51,8 +51,8 @@ export default function EmailPassword({
   displayName,
   formLabelStyles,
   formSmallButtonStyles,
-  customErrors
-  // setMfaResolver,
+  customErrors,
+  setMfaResolver,
 }) {
 
   const [loading, setLoading] = useState(false);
@@ -120,7 +120,9 @@ export default function EmailPassword({
             const code2 = codeFromError(err2);
             if (code2 === "auth/multi-factor-auth-required") {
               // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
-              setResolver(getMultiFactorResolver(auth, err2));
+              setMfaResolver(getMultiFactorResolver(auth, err2))
+              setMfaSignIn(true);
+              setSendSMS(true);
             } else {
               // signing in didn't work for a different reason
               setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);

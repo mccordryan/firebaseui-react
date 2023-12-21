@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   FacebookAuthProvider,
@@ -5,6 +7,7 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   TwitterAuthProvider,
+  browserPopupRedirectResolver,
   getMultiFactorResolver,
   signInAnonymously,
   signInWithPopup,
@@ -98,8 +101,8 @@ export default function Provider({
         providerId == "anonymous"
           ? signInAnonymously(auth)
           : signInFlow == "redirect"
-            ? signInWithRedirect(auth, provider)
-            : signInWithPopup(auth, provider);
+            ? signInWithRedirect(auth, provider, browserPopupRedirectResolver)
+            : signInWithPopup(auth, provider, browserPopupRedirectResolver);
       try {
         await flowFunction().then((user) => {
           callbacks?.signInSuccessWithAuthResult(user);

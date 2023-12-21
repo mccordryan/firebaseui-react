@@ -1,3 +1,5 @@
+"use client"
+
 import {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
@@ -25,7 +27,9 @@ export default function PhoneNumber({
   formInputStyles,
   formLabelStyles,
   formSmallButtonStyles,
-  customErrors
+  customErrors,
+  setMfaResolver,
+  setMfaSignIn
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -37,18 +41,10 @@ export default function PhoneNumber({
   const [countryCode, setCountryCode] = useState("+1");
   const [verificationId, setVerificationId] = useState();
   const [name, setName] = useState("");
+  const [selectedHint, setSelectedHint] = useState(0);
 
   const phoneAuthProvider = new PhoneAuthProvider(auth);
   let recaptchaVerifier
-
-  useEffect(() => {
-    const container = document.getElementById('recaptcha-container');
-    if (container && !recaptchaVerifier) {
-      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible'
-      });
-    }
-  }, [])
 
   useEffect(() => {
     setPhoneNumberValid(enterCode || mfaSignIn ? true : /^\d{3}-\d{3}-\d{4}$/.test(phoneNumber) && (displayName == "required" ? name.length > 0 : true))
@@ -56,10 +52,15 @@ export default function PhoneNumber({
 
   const sendMfaText = function () {
     console.log("MFA")
+    if (!recaptchaVerifier) {
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+    }
     if (mfaSignIn && mfaResolver && recaptchaVerifier) {
-
+      console.log('everything here')
       const phoneInfoOptions = {
-        multiFactorHint: mfaResolver.hints[0],
+        multiFactorHint: mfaResolver.hints[selectedHint],
         session: mfaResolver.session
       }
       try {
@@ -70,6 +71,8 @@ export default function PhoneNumber({
       } catch (error) {
         recaptchaVerifier.clear();
       }
+    } else {
+      console.log('mfasignin: ', mfaSignIn, 'mfaResolver: ', mfaResolver, 'recaptchaVerifier: ', recaptchaVerifier)
     }
   }
 
@@ -169,9 +172,11 @@ export default function PhoneNumber({
         mfaResolver.resolveSignIn(multiFactorAssertion).then((userCred) => {
           if (isResetPassword) {
             setResetPasswordOpen(true)
-            setSendSMS(false)
           }
           else if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred.user);
+          setSendSMS(false);
+          setMfaResolver(null);
+          setMfaSignIn(false);
         })
       } catch (error) {
         console.error(error);
@@ -397,7 +402,17 @@ export default function PhoneNumber({
       )}
 
       {!enterCode && mfaSignIn && <div>
-        <p>A confirmation text will be sent to your phone number ending in {mfaResolver?.hints[0]?.phoneNumber?.slice(-4)}</p>
+        <select value={selectedHint} onChange={(e) => setSelectedHint(e.target.value)} style={{
+          border: '1px solid #e2e8f0', // gray-300
+          borderRadius: '0.375rem',
+          padding: '0.5rem 0.75rem',
+          width: '100%'
+        }}>
+          {mfaResolver?.hints.map((hint, index) => (
+            <option value={index} key={index}>xxx-xxx-{hint.phoneNumber?.slice(-4)}</option>
+          ))}
+        </select>
+        <p>A confirmation text will be sent to your phone number ending in {mfaResolver?.hints[selectedHint]?.phoneNumber?.slice(-4)}</p>
       </div>}
       {enterCode && (
         <>

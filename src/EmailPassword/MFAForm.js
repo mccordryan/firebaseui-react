@@ -69,16 +69,8 @@ export default function MFAForm({
   validInputStyle,
   labelStyle,
 }) {
-  const hints = [
-    {
-      factorId: "phone",
-      uid: "06f21d43-8c8d-405b-b6f8-6ac89335e9f0",
-      enrollmentTime: "Wed, 22 Nov 2023 02:32:24 GMT",
-      displayName: "",
-      phoneNumber: "+*******5828",
-    },
-  ];
-  // const { hints } = resolver;
+
+  const { hints } = resolver;
   const [factorUid, setFactorUid] = useState(hints[0].uid);
   const [loading, setLoading] = useState(false);
   const [codeSent, setCodeSent] = useState(true);
@@ -87,8 +79,8 @@ export default function MFAForm({
   useEffect(() => {
     new RecaptchaVerifier(auth, "recaptcha-container-id", {
       size: "invisible",
-      callback: (response) => {},
-      "expired-callback": () => {},
+      callback: (response) => { },
+      "expired-callback": () => { },
     });
   }, []);
 
