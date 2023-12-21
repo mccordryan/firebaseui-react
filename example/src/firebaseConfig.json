@@ -1,9 +1,9 @@
 {
-  "apiKey": "AIzaSyAtSK5-UI1TVQ7XtqytDZGdDFIXXS0MB2M",
-  "authDomain": "fir-uireact-e4a98.firebaseapp.com",
-  "projectId": "fir-uireact-e4a98",
-  "storageBucket": "fir-uireact-e4a98.appspot.com",
-  "messagingSenderId": "803290486849",
-  "appId": "1:803290486849:web:e9844f33413cb7231c4ec0",
-  "measurementId": "G-2SP1MK7D8D"
+  "apiKey": "AIzaSyDWpRNLdtHkTr6njsLmKyeTngaf98yNjLA",
+  "authDomain": "react-firebaseui-demo-fa695.firebaseapp.com",
+  "projectId": "react-firebaseui-demo-fa695",
+  "storageBucket": "react-firebaseui-demo-fa695.appspot.com",
+  "messagingSenderId": "739098380958",
+  "appId": "1:739098380958:web:6f1b56a13a567aed66498f",
+  "measurementId": "G-CN767TPL2F"
 }

@@ -77,7 +77,7 @@ export default function EmailPassword({
 
   // MFA Resolver
 
-  async function onSubmit(e) {
+  async function authenticateUser(e) {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
@@ -123,11 +123,13 @@ export default function EmailPassword({
             } else {
               // signing in didn't work for a different reason
               setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);
+              setLoading(false);
               if (callbacks?.signInFailure) callbacks.signInFailure(err2)
             }
           }
         } else {
           // creating an account didn't work for some other reason
+          setLoading(false);
           setError(customErrors && customErrors[code] !== undefined ? customErrors[code] : errors[code] || err.message);
           if (callbacks?.signInFailure) callbacks.signInFailure(err)
         }
@@ -154,7 +156,7 @@ export default function EmailPassword({
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ width: "100%" }}>
+    <div style={{ width: "100%" }}>
       <EmailField
         value={email}
         setValue={setEmail}
@@ -184,18 +186,17 @@ export default function EmailPassword({
         setPasswordValid={setPasswordValid}
       />
 
-      <button disabled={loading || !formIsValid} type="submit" style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
+      <button disabled={loading || !formIsValid} onClick={(e) => authenticateUser(e)} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
         {loading ? "Loading..." : "Log in or create account"}
       </button>
       {false && (
         <button
-          type="button"
           style={{ ...cancelButtonStyle, ...formSmallButtonStyles, }}
           onClick={() => setEmailExists(null)}
         >
           Cancel
         </button>
       )}
-    </form>
+    </div>
   );
 }
