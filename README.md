@@ -12,12 +12,12 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
 
 1. Install using your preferred package manager:
 
-   - `npm i react-firebaseui` or `yarn add react-firebaseui`
+   - `npm i firebaseui-react` or `yarn add firebaseui-react`
 
-2. Import the `FirebaseUI` component:
+2. Import the `ReactFirebaseUI` component:
 
    ```js
-   import FirebaseUI from "react-firebaseui";
+   import ReactFirebaseUI from "firebaseui-react";
    ```
 
 3. Initialize a configuration object and a Firebase Auth instance:
@@ -34,7 +34,7 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
 4. Return the component with valid Firebase Auth Instance:
 
    ```js
-   <FirebaseUI auth={auth} config={config} />
+   <ReactFirebaseUI auth={auth} config={config} />
    ```
 
 # Configuration

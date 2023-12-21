@@ -15,8 +15,6 @@ import { errors } from "../Errors";
 import EmailField from "./EmailField";
 import PasswordField from "./PasswordField";
 
-import MFAForm from "./MFAForm";
-
 import {
   validInputStyle,
   invalidInputStyle,
@@ -78,7 +76,6 @@ export default function EmailPassword({
 
 
   // MFA Resolver
-  const [resolver, setResolver] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -155,17 +152,6 @@ export default function EmailPassword({
     setLoading(false);
     setAlert("Check your email for a password reset link.");
   }
-
-  if (resolver)
-    return (
-      <MFAForm
-        auth={auth}
-        resolver={resolver}
-        buttonStyle={buttonStyle}
-        validInputStyle={validInputStyle}
-        labelStyle={labelStyle}
-      />
-    );
 
   return (
     <form onSubmit={onSubmit} style={{ width: "100%" }}>
