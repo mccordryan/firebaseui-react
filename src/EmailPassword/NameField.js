@@ -14,7 +14,7 @@ export default function NameField({
     setNameValid
 }) {
     const [isDirty, setIsDirty] = useState(false);
-    const isValid = /^[a-zA-Z'-]+$/.test(value); //only letters, apostrophes, and hyphens
+    const isValid = /^[a-zA-Z'-\s]+$/.test(value); //only letters, apostrophes, and hyphens
 
     const inputStyle = isDirty && !isValid ? invalidInputStyle : validInputStyle;
 
