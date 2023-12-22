@@ -32,9 +32,7 @@ function passwordErrors({ password, passwordSpecs }) {
 function formatPasswordRequirements(passwordSpecs) {
   let requirements = [];
 
-  if (passwordSpecs?.minCharacters) {
-    requirements.push(`at least ${passwordSpecs.minCharacters} characters`);
-  }
+  requirements.push(`at least ${passwordSpecs?.minCharacters || 6} characters`);
 
   let additionalReqs = [];
 
