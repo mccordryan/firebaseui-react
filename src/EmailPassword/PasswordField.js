@@ -81,6 +81,7 @@ export default function PasswordField({
   formInputStyles,
   formLabelStyles,
   setPasswordValid,
+  authType
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -106,10 +107,10 @@ export default function PasswordField({
           justifyContent: "space-between",
         }}
       >
-        <label htmlFor="password" style={{ labelStyle, ...formLabelStyles }}>
+        <label htmlFor="password" style={{ ...labelStyle, ...formLabelStyles }}>
           Password
         </label>
-        {typeof onResetPassword === "function" && (
+        {authType != "signUp" && typeof onResetPassword === "function" && (
           <div style={{ fontSize: "0.875rem" }}>
             <button
               style={{ fontWeight: "600", color: "#2563eb" }}

@@ -200,6 +200,7 @@ export default function EmailPassword({
         formInputStyles={formInputStyles}
         formLabelStyles={formLabelStyles}
         setPasswordValid={setPasswordValid}
+        authType={authType}
       />
 
       <button disabled={loading || !formIsValid} onClick={(e) => authenticateUser(e)} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
