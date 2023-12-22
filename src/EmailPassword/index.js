@@ -8,6 +8,9 @@ import {
   getMultiFactorResolver,
   sendEmailVerification,
   sendPasswordResetEmail,
+  sendSignInLinkToEmail,
+  updateCurrentUser,
+  updateProfile,
 } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
 import { errors } from "../Errors";
@@ -23,6 +26,7 @@ import {
   buttonStyle,
   cancelButtonStyle,
 } from "./defaultStyles";
+import NameField from "./NameField";
 
 function codeFromError(error) {
   let code = error.code;
@@ -65,13 +69,13 @@ export default function EmailPassword({
 
   const [passwordValid, setPasswordValid] = useState(false);
   const [emailValid, setEmailValid] = useState(false);
+  const [nameValid, setNameValid] = useState(false);
 
   useEffect(() => {
     setFormIsValid(
-      passwordValid && emailValid && (displayName === "required" ? name.length > 0 : true),
+      passwordValid && emailValid && (displayName === "required" ? nameValid : true),
     );
-
-  }, [emailValid, passwordValid, name]);
+  }, [emailValid, passwordValid, nameValid]);
 
 
 
@@ -96,7 +100,13 @@ export default function EmailPassword({
       // first try to create an account
       try {
         await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
-          if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+          if (displayName && name) {
+            updateProfile(auth.currentUser, { displayName: name }).then(() => {
+              if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+            })
+          } else {
+            if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+          }
         })
         setLoading(false);
         return;
@@ -140,23 +150,29 @@ export default function EmailPassword({
   const [resetLinkSent, setResetLinkSent] = useState(false);
 
   async function onResetPassword() {
-    setLoading(true);
-    const url = new URL(continueUrl);
-    // add email query param to url
-    url.searchParams.append("email", email);
-    url.searchParams.append("resetPassword", "true");
-
-    await sendPasswordResetEmail(auth, email, {
-      handleCodeInApp: !continueUrl,
-      url: url.toString(),
+    await sendSignInLinkToEmail(auth, email, {
+      handleCodeInApp: true,
+      url: `${continueUrl}/?resetPassword=true&email=${email}`
+    }).then(() => {
+      setAlert(`A reset-password email has been sent to ${email}.`);
     });
-    setResetLinkSent(true);
-    setLoading(false);
-    setAlert("Check your email for a password reset link.");
   }
 
   return (
     <div style={{ width: "100%" }}>
+
+      {displayName && <NameField
+        value={name}
+        setValue={setName}
+        validInputStyle={validInputStyle}
+        invalidInputStyle={invalidInputStyle}
+        labelStyle={labelStyle}
+        descriptionStyle={descriptionStyle}
+        disabled={loading}
+        formInputStyles={formInputStyles}
+        formLabelStyles={formLabelStyles}
+        setNameValid={setNameValid} />}
+
       <EmailField
         value={email}
         setValue={setEmail}
