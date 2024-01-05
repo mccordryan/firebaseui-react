@@ -28,15 +28,6 @@ import {
 } from "./defaultStyles";
 import NameField from "./NameField";
 
-function codeFromError(error) {
-  let code = error.code;
-  if (error.customData?.message) {
-    // extract the error code from between the parenthesis
-    code = error.customData.message.match(/\(([^)]+)\)/)[1];
-  }
-  return code;
-}
-
 export default function EmailPassword({
   auth,
   callbacks,
@@ -55,6 +46,7 @@ export default function EmailPassword({
   formSmallButtonStyles,
   customErrors,
   setMfaResolver,
+  fullLabel
 }) {
 
   const [loading, setLoading] = useState(false);
@@ -92,16 +84,19 @@ export default function EmailPassword({
           if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
         })
       } catch (error) {
-        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.message);
+        // console.log(error?.customData?._tokenResponse?.error?.message || "no error")
+        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
+
         if (callbacks?.signInFailure) callbacks.signInFailure(error)
       }
     } else {
 
       // first try to create an account
       try {
-        await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
+
+        await createUserWithEmailAndPassword(auth, email, password).then(async (userCred) => {
           if (displayName && name) {
-            updateProfile(auth.currentUser, { displayName: name }).then(() => {
+            await updateProfile(auth.currentUser, { displayName: name }).then(() => {
               if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
             })
           } else {
@@ -111,11 +106,11 @@ export default function EmailPassword({
         setLoading(false);
         return;
       } catch (err) {
+        // console.log(err?.customData?._tokenResponse?.error?.message || "no err")
         // creating an account didn't work. Why not?
 
-        const code = codeFromError(err);
-
-        if (code === "auth/email-already-in-use" && authType !== "signUp") {
+        //const code = codeFromError(err);
+        if (err.code === "auth/email-already-in-use" && authType !== "signUp") {
           // because the user already has an account! Let's try signing them in...
           try {
             await signInWithEmailAndPassword(auth, email, password).then((userCred) => {
@@ -124,15 +119,16 @@ export default function EmailPassword({
             setLoading(false);
             return;
           } catch (err2) {
-            const code2 = codeFromError(err2);
-            if (code2 === "auth/multi-factor-auth-required") {
+
+            //const code2 = codeFromError(err2);
+            if (err2.code === "auth/multi-factor-auth-required") {
               // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
               setMfaResolver(getMultiFactorResolver(auth, err2))
               setMfaSignIn(true);
               setSendSMS(true);
             } else {
               // signing in didn't work for a different reason
-              setError(customErrors && customErrors[code2] !== undefined ? customErrors[code2] : errors[code2] || err2.message);
+              setError(customErrors && customErrors[err2.code] !== undefined ? customErrors[err2.code] : errors[err2.code] || err2.code);
               setLoading(false);
               if (callbacks?.signInFailure) callbacks.signInFailure(err2)
             }
@@ -140,7 +136,7 @@ export default function EmailPassword({
         } else {
           // creating an account didn't work for some other reason
           setLoading(false);
-          setError(customErrors && customErrors[code] !== undefined ? customErrors[code] : errors[code] || err.message);
+          setError(customErrors && customErrors[err.code] !== undefined ? customErrors[err.code] : errors[err.code] || err.code);
           if (callbacks?.signInFailure) callbacks.signInFailure(err)
         }
       }
@@ -159,7 +155,7 @@ export default function EmailPassword({
   }
 
   return (
-    <div style={{ width: "100%" }}>
+    <form style={{ width: "100%" }} onSubmit={authenticateUser}>
 
       {displayName && <NameField
         value={name}
@@ -201,10 +197,12 @@ export default function EmailPassword({
         formLabelStyles={formLabelStyles}
         setPasswordValid={setPasswordValid}
         authType={authType}
+        emailValid={emailValid}
+        setError={setError}
       />
 
-      <button disabled={loading || !formIsValid} onClick={(e) => authenticateUser(e)} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
-        {loading ? "Loading..." : "Log in or create account"}
+      <button tabIndex="3" type="submit" disabled={loading || !formIsValid} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
+        {loading ? "Loading..." : fullLabel || "Log in or create account"}
       </button>
       {false && (
         <button
@@ -214,6 +212,6 @@ export default function EmailPassword({
           Cancel
         </button>
       )}
-    </div>
+    </form>
   );
 }

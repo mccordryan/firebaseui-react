@@ -27,12 +27,13 @@ export const labelStyle = {
   color: "#1a202c",
 };
 export const descriptionStyle = {
-  marginTop: "0.5rem",
+  marginTop: "0.3rem",
   fontSize: "0.875rem",
   color: "#7F1D1D",
 };
 
 export const buttonStyle = {
+  marginTop: "1rem",
   display: "flex",
   paddingTop: "0.375rem",
   paddingBottom: "0.375rem",

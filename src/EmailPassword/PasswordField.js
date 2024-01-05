@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { useEffect } from "react";
 
@@ -79,7 +80,9 @@ export default function PasswordField({
   formInputStyles,
   formLabelStyles,
   setPasswordValid,
-  authType
+  authType,
+  emailValid,
+  setError,
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -111,13 +114,18 @@ export default function PasswordField({
         {authType != "signUp" && typeof onResetPassword === "function" && (
           <div style={{ fontSize: "0.875rem" }}>
             <button
-              style={{ fontWeight: "600", color: "#2563eb" }}
+              style={{ fontWeight: "600", color: emailValid ? "#2563eb" : "#3b3b3b" }}
               type="button"
+              tabIndex="4"
               onClick={async (e) => {
                 e.preventDefault();
-                setResettingPassword(true);
-                await onResetPassword();
-                setResettingPassword(false);
+                if (!emailValid) {
+                  setError("Please enter a valid email address before resetting your password.");
+                } else {
+                  setResettingPassword(true);
+                  await onResetPassword();
+                  setResettingPassword(false);
+                }
               }}
             // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
             // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
@@ -142,6 +150,7 @@ export default function PasswordField({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={() => setIsDirty(true)}
+          tabIndex="2"
         />
       </div>
       <p style={descriptionStyle} id="password-description">

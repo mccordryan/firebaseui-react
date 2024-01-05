@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import Provider from "./Provider";
 import { providerStyles } from "./providerStyles";
@@ -41,8 +42,16 @@ export default function FirebaseUI({
   }, [auth]);
 
   useEffect(() => {
-    console.log(error)
+    if (error && alert) {
+      setAlert("")
+    }
   }, [error])
+
+  useEffect(() => {
+    if (alert && error) {
+      setError("")
+    }
+  }, [alert])
 
   useEffect(() => {
     //open the email verification for signed in but unverified users.
