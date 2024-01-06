@@ -24,7 +24,7 @@ export default function Home() {
         console.error(error);
       },
     },
-    passwordSpecs: { minCharacters: 8, },
+    passwordSpecs: { minCharacters: 6, },
     signInOptions: [
       {
         provider: "emailpassword",

@@ -12,6 +12,17 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
     const email = queryParams.get('email')
     const [showPassHelper, setShowPassHelper] = useState(false);
 
+    const processNetworkError = (error) => {
+        error = JSON.parse(JSON.stringify(error));
+        if (error.code === 400 || error.code === "auth/network-request-failed" && error?.customData?.message) {
+            let message = error.customData.message;
+            let sliced = message.slice(32, message.length - 2)
+            error.code = sliced;
+        }
+
+        return error;
+    }
+
     const submit = function (e) {
         e.preventDefault();
         if (!formIsValid) return;
@@ -23,6 +34,7 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
                 }
             })
         } catch (error) {
+            error = processNetworkError(error);
             setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
             if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
             throw new Error(signInError.code);

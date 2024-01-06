@@ -37,6 +37,17 @@ export default function EmailLink({
   const [name, setName] = useState("");
   const emailRef = useRef(null);
 
+  const processNetworkError = (error) => {
+    error = JSON.parse(JSON.stringify(error));
+    if (error.code === 400 || error.code === "auth/network-request-failed" && error?.customData?.message) {
+      let message = error.customData.message;
+      let sliced = message.slice(32, message.length - 2)
+      error.code = sliced;
+    }
+
+    return error;
+  }
+
   useEffect(() => {
     setFormIsValid(isEmailValid() && (displayName == "required" ? name.length > 0 : true));
   }, [email, name]);
@@ -72,6 +83,7 @@ export default function EmailLink({
           },
         );
       } catch (error) {
+        error = processNetworkError(error);
         if (error.code === "auth/multi-factor-auth-required") {
           setMfaResolver(getMultiFactorResolver(auth, error))
           setMfaSignIn(true);
@@ -112,6 +124,7 @@ export default function EmailLink({
         });
       }
     } catch (error) {
+      error = processNetworkError(error);
       if (finishEmailSignIn && callbacks?.signInFailure)
         callbacks.signInFailure(error);
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");

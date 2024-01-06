@@ -63,6 +63,18 @@ export default function EmailPassword({
   const [emailValid, setEmailValid] = useState(false);
   const [nameValid, setNameValid] = useState(false);
 
+  const processNetworkError = (error) => {
+    error = JSON.parse(JSON.stringify(error));
+    if (error.code === 400 || error.code === "auth/network-request-failed" && error?.customData?.message) {
+      let message = error.customData.message;
+      let sliced = message.slice(32, message.length - 2)
+      error.code = sliced;
+    }
+
+    return error;
+  }
+
+
   useEffect(() => {
     setFormIsValid(
       passwordValid && emailValid && (displayName === "required" ? nameValid : true),
@@ -84,7 +96,7 @@ export default function EmailPassword({
           if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
         })
       } catch (error) {
-        // console.log(error?.customData?._tokenResponse?.error?.message || "no error")
+        error = processNetworkError(error);
         setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
 
         if (callbacks?.signInFailure) callbacks.signInFailure(error)
@@ -106,10 +118,7 @@ export default function EmailPassword({
         setLoading(false);
         return;
       } catch (err) {
-        // console.log(err?.customData?._tokenResponse?.error?.message || "no err")
-        // creating an account didn't work. Why not?
-
-        //const code = codeFromError(err);
+        err = processNetworkError(err);
         if (err.code === "auth/email-already-in-use" && authType !== "signUp") {
           // because the user already has an account! Let's try signing them in...
           try {
@@ -119,7 +128,7 @@ export default function EmailPassword({
             setLoading(false);
             return;
           } catch (err2) {
-
+            err2 = processNetworkError(err2);
             //const code2 = codeFromError(err2);
             if (err2.code === "auth/multi-factor-auth-required") {
               // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
@@ -146,12 +155,17 @@ export default function EmailPassword({
   const [resetLinkSent, setResetLinkSent] = useState(false);
 
   async function onResetPassword() {
-    await sendSignInLinkToEmail(auth, email, {
-      handleCodeInApp: true,
-      url: `${continueUrl}/?resetPassword=true&email=${email}`
-    }).then(() => {
-      setAlert(`A reset-password email has been sent to ${email}.`);
-    });
+    try {
+      await sendSignInLinkToEmail(auth, email, {
+        handleCodeInApp: true,
+        url: `${continueUrl}/?resetPassword=true&email=${email}`
+      }).then(() => {
+        setAlert(`A reset-password email has been sent to ${email}.`);
+      });
+    } catch (error) {
+      error = processNetworkError(error);
+      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
+    }
   }
 
   return (

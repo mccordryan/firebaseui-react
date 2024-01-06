@@ -8,10 +8,11 @@ module.exports = {
     filename: "index.js",
     library: "ReactFirebaseUI",
     libraryTarget: "umd",
-    // globalObject: "this",
+    // globalObject: "this"
   },
   externals: {
     react: "react",
+    firebase: "firebase",
   },
   devtool: "source-map",
   module: {

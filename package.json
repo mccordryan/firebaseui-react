@@ -1,6 +1,6 @@
 {
   "name": "firebaseui-react",
-  "version": "1.1.10",
+  "version": "1.1.58",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [

@@ -278,6 +278,8 @@ const config = {
 
 `signInSuccessWithAuthResult` is passed a userCredential object containing the Firebase Credential of the newly authenticated user. Likewise, `signInFailure` is passed the error thrown by the failed operation.
 
+If the user resets their password, `signInSuccessWithAuthResult` will not be called until the password has been successfully updated.
+
 # Custom Error Handling
 
 To override the default error messages, or set a message on an unhandled error, you can pass a `customErrors` object to your top level configuration. The keys of this object should be string-formatted error codes and the values should be the desired error message:
@@ -298,23 +300,27 @@ const config = {
 
 By default, React-FirebaseUI allows for sign in and sign up in a single component. In other words, if you try to log in with a non-existent account, that account will then be created.
 
-Although this behavior cannot be overridden on third party providers, you can limit the Email / Password sign in option to allow only new users, or only existing ones:
+Although this behavior cannot be overridden on third party providers, you can limit the Email / Password sign in option to allow only new users, or only existing ones. This is done by adding an `authType` field inside an `emailpassword` provider object.
 
 **Sign In Only**
 
 ```js
-const config = {
-  authType: "signIn",
-  signInOptions: ["emailpassword"],
+const config = {,
+  signInOptions: [{
+    provider: "emailpassword",
+    authType: "signIn"
+    }],
 };
 ```
 
 **Sign Up Only**
 
 ```js
-const config = {
-  authType: "signUp",
-  signInOptions: ["emailpassword"],
+const config = {,
+  signInOptions: [{
+    provider: "emailpassword",
+    authType: "signUp"
+    }],
 };
 ```
 
@@ -336,7 +342,7 @@ By default, the only password requirement is Firebase's 6 character minimum. To 
 ```js
 const config = {
   passwordSpecs: {
-    minCharacters: 8, // Must contain at least 8 characters
+    minCharacters: 8, // Must contain at least 8 characters. The Firebase minimum is 6.
     containsUppercase: true, // Must contain an uppercase letter A-Z
     containsLowercase: true, // Must contain a lowercase letter a-z
     containsNumber: true, // Must contain a number 0-9
@@ -371,7 +377,12 @@ const config = {
   // Define all supported sign-in methods.
   signInOptions: [
     // Basic providers
-    "emailpassword",
+    {
+      provider: "emailpassword",
+
+      // Customizing authentication types for Email/Password
+      authType: "signIn", // Other values: 'signUp'
+    },
     "apple.com",
     "x.com",
     "github.com",
@@ -402,9 +413,6 @@ const config = {
       scopes: ["user_birthday", "user_likes"], // Adding multiple OAuth Scopes
     },
   ],
-
-  // Customizing authentication types for Email/Password
-  authType: "signIn", // Other values: 'signUp'
 
   // Custom password requirements
   passwordSpecs: {

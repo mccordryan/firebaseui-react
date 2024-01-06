@@ -43,6 +43,17 @@ export default function PhoneNumber({
   const [name, setName] = useState("");
   const [selectedHint, setSelectedHint] = useState(0);
 
+  const processNetworkError = (error) => {
+    error = JSON.parse(JSON.stringify(error));
+    if (error.code === 400 || error.code === "auth/network-request-failed" && error?.customData?.message) {
+      let message = error.customData.message;
+      let sliced = message.slice(32, message.length - 2)
+      error.code = sliced;
+    }
+
+    return error;
+  }
+
   const phoneAuthProvider = new PhoneAuthProvider(auth);
   let recaptchaVerifier
 
@@ -139,7 +150,8 @@ export default function PhoneNumber({
         },
       );
     } catch (error) {
-      console.error(error);
+
+      error = processNetworkError(error);
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
     }
   };
@@ -156,7 +168,7 @@ export default function PhoneNumber({
         setSendSMS(false);
       });
     } catch (error) {
-      console.error(error);
+      error = processNetworkError(error);
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
       if (callbacks?.signInFailure) callbacks.signInFailure(error);
     }
@@ -179,7 +191,7 @@ export default function PhoneNumber({
           setMfaSignIn(false);
         })
       } catch (error) {
-        console.error(error);
+        error = processNetworkError(error);
         setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
         if (callbacks?.signInFailure) callbacks.signInFailure(error);
       }
