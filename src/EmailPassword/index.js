@@ -98,7 +98,7 @@ export default function EmailPassword({
       } catch (error) {
         error = processNetworkError(error);
         setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
-
+        setLoading(false)
         if (callbacks?.signInFailure) callbacks.signInFailure(error)
       }
     } else {
@@ -114,9 +114,10 @@ export default function EmailPassword({
           } else {
             if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
           }
+
+          setLoading(false);
         })
-        setLoading(false);
-        return;
+
       } catch (err) {
         err = processNetworkError(err);
         if (err.code === "auth/email-already-in-use" && authType !== "signUp") {
@@ -124,12 +125,13 @@ export default function EmailPassword({
           try {
             await signInWithEmailAndPassword(auth, email, password).then((userCred) => {
               if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred)
+              setLoading(false);
             })
-            setLoading(false);
             return;
           } catch (err2) {
             err2 = processNetworkError(err2);
             //const code2 = codeFromError(err2);
+            setLoading(false);
             if (err2.code === "auth/multi-factor-auth-required") {
               // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
               setMfaResolver(getMultiFactorResolver(auth, err2))
@@ -138,7 +140,6 @@ export default function EmailPassword({
             } else {
               // signing in didn't work for a different reason
               setError(customErrors && customErrors[err2.code] !== undefined ? customErrors[err2.code] : errors[err2.code] || err2.code);
-              setLoading(false);
               if (callbacks?.signInFailure) callbacks.signInFailure(err2)
             }
           }
@@ -156,9 +157,12 @@ export default function EmailPassword({
 
   async function onResetPassword() {
     try {
+      let url = new URL(window.location.href);
+      url.searchParams.set("email", email);
+      url.searchParams.set("resetPassword", 'true');
       await sendSignInLinkToEmail(auth, email, {
         handleCodeInApp: true,
-        url: `${continueUrl}/?resetPassword=true&email=${email}`
+        url: url.toString()
       }).then(() => {
         setAlert(`A reset-password email has been sent to ${email}.`);
       });

@@ -128,7 +128,6 @@ export default function EmailLink({
       if (finishEmailSignIn && callbacks?.signInFailure)
         callbacks.signInFailure(error);
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
-      throw new Error(error)
     }
   };
 

@@ -83,6 +83,7 @@ export default function PasswordField({
   authType,
   emailValid,
   setError,
+  callbacks
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -109,9 +110,9 @@ export default function PasswordField({
         }}
       >
         <label htmlFor="password" style={{ ...labelStyle, ...formLabelStyles }}>
-          Password
+          {newPassword ? "New Password" : "Password"}
         </label>
-        {authType != "signUp" && typeof onResetPassword === "function" && (
+        {authType != "signUp" && (
           <div style={{ fontSize: "0.875rem" }}>
             <button
               style={{ fontWeight: "600", color: emailValid ? "#2563eb" : "#3b3b3b" }}
@@ -119,18 +120,22 @@ export default function PasswordField({
               tabIndex="4"
               onClick={async (e) => {
                 e.preventDefault();
-                if (!emailValid) {
-                  setError("Please enter a valid email address before resetting your password.");
+                if (!newPassword) {
+                  if (!emailValid) {
+                    setError("Please enter a valid email address before resetting your password.");
+                  } else {
+                    setResettingPassword(true);
+                    await onResetPassword();
+                    setResettingPassword(false);
+                  }
                 } else {
-                  setResettingPassword(true);
-                  await onResetPassword();
-                  setResettingPassword(false);
+                  if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult();
                 }
               }}
             // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
             // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
             >
-              {resettingPassword ? "Sending..." : "Send reset link"}
+              {newPassword ? "Skip" : resettingPassword ? "Sending..." : "Send reset link"}
             </button>
           </div>
         )}
@@ -143,7 +148,7 @@ export default function PasswordField({
           name="password"
           id="password"
           style={{ ...inputStyle, ...formInputStyles }}
-          placeholder={newPassword ? "create a new password" : "your password"}
+          placeholder={newPassword ? "your new password" : "your password"}
           autoComplete={newPassword ? "new-password" : "current-password"}
           aria-describedby="password-description"
           aria-invalid={!isValid ? "true" : "false"}
