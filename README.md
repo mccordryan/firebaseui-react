@@ -25,7 +25,7 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
 
    ```js
    import dynamic from "next/dynamic";
-   const ReactFirebaseUI = dynamic(() => import("firebaseui-react"), {
+   const FirebaseUIReact = dynamic(() => import("firebaseui-react"), {
      ssr: false,
    });
    ```
