@@ -1,6 +1,6 @@
-# react-firebaseui
+# firebaseui-react
 
-React-FirebaseUI is a component library that allows you to add Firebase authentication to your React.js or Next.js project with only a few lines of code, regardless of your specific use case.
+firebaseui-react is a component library that allows you to add Firebase authentication to your React.js or Next.js project with only a few lines of code, regardless of your specific use case.
 
 # Demo
 
@@ -14,10 +14,20 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
 
    - `npm i firebaseui-react` or `yarn add firebaseui-react`
 
-2. Import the `ReactFirebaseUI` component:
+2. Import the `FirebaseUIReact` component:
 
    ```js
-   import ReactFirebaseUI from "firebaseui-react";
+   import FirebaseUIReact from "firebaseui-react";
+   ```
+
+   **IMPORTANT - NEXT.JS ONLY**
+   If you are using this component in Next.js, you must import the component dynamically with server side rendering disabled. This is not a permanent requirement, and should be patched soon.
+
+   ```js
+   import dynamic from "next/dynamic";
+   const ReactFirebaseUI = dynamic(() => import("firebaseui-react"), {
+     ssr: false,
+   });
    ```
 
 3. Initialize a configuration object and a Firebase Auth instance:
@@ -34,7 +44,7 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
 4. Return the component with valid Firebase Auth Instance:
 
    ```js
-   <ReactFirebaseUI auth={auth} config={config} />
+   <FirebaseUIReact auth={auth} config={config} />
    ```
 
 # Configuration
@@ -43,7 +53,7 @@ The rest of this documentation will show the various ways you can modify your co
 
 # Sign In Options
 
-`react-firebaseui` supports a wide variety of ways to authenticate. You can add and remove authentication methods by editing the `signInOptions` array in your configuration object. The following example contains all currently supported sign in options:
+`firebaseui-react` supports a wide variety of ways to authenticate. You can add and remove authentication methods by editing the `signInOptions` array in your configuration object. The following example contains all currently supported sign in options:
 
 ```js
 const config = {
@@ -280,6 +290,12 @@ const config = {
 
 If the user resets their password, `signInSuccessWithAuthResult` will not be called until the password has been successfully updated.
 
+It is advised that you use the `signInSuccessWithAuthResult` callback for routing your authenticated users as opposed to a `useEffect` hook, because the `useEffect` hook will redirect users before they can complete a password reset. As a workaround to this, you can check to make sure the `resetPassword` query parameter is not `"true"` before you redirect.
+
+# Reset Password
+
+Because using Firebase's default reset password functionality routes you to a third party page with limited customizability, this package handles password resets by sending a regular sign in email (the same one sent by the "emaillink" provider). This workaround allows password resets to be handled locally within your project.
+
 # Custom Error Handling
 
 To override the default error messages, or set a message on an unhandled error, you can pass a `customErrors` object to your top level configuration. The keys of this object should be string-formatted error codes and the values should be the desired error message:
@@ -298,7 +314,7 @@ const config = {
 
 **Authentication Types (Sign In & Sign Up)**
 
-By default, React-FirebaseUI allows for sign in and sign up in a single component. In other words, if you try to log in with a non-existent account, that account will then be created.
+By default, firebaseui-react allows for sign in and sign up in a single component. In other words, if you try to log in with a non-existent account, that account will then be created.
 
 Although this behavior cannot be overridden on third party providers, you can limit the Email / Password sign in option to allow only new users, or only existing ones. This is done by adding an `authType` field inside an `emailpassword` provider object.
 
@@ -326,7 +342,7 @@ const config = {,
 
 **continueUrl**
 
-You must pass a `continueUrl` field to your top-level configuration if you want reset password and/or email link functionality in your app. This value should be set to the url where your component is rendered.
+You must pass a `continueUrl` field to your top-level configuration if you want reset password and/or email link functionality in your app. This value should be set to the url where your component is rendered. If it is not set to the proper url, reset password and email link features will not work as expected.
 
 ```js
 const config = {
@@ -352,9 +368,11 @@ const config = {
 };
 ```
 
+The error message displayed under the password field when requirements are not met is also determined by `passwordSpecs`. If no `passwordSpecs` object is given, this message will default to the Firebase 6 character minimum.
+
 # Multi Factor Authentication
 
-React-FirebaseUI supports Multi Factor Authentication for existing accounts. For this to work, you will have to enable MFA in Firebase Console. Furthermore, the process of adding a second factor is not supported and will have to be implemented manually.
+firebaseui-react supports Multi Factor Authentication sign in for existing accounts. For this to work, you will have to enable MFA in Firebase Console. Furthermore, the process of adding a second factor is not supported and will have to be implemented manually.
 
 # Display Name
 

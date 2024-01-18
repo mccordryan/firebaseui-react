@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
-    library: "ReactFirebaseUI",
+    library: "FirebaseUIReact",
     libraryTarget: "umd",
     // globalObject: "this"
   },
