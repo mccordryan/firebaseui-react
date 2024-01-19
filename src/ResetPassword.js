@@ -11,8 +11,7 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
     const [password, setPassword] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
 
-    const queryParams = new URLSearchParams(window.location.search);
-    const email = queryParams.get('email')
+    const [email, setEmail] = useState("");
     const [showPassHelper, setShowPassHelper] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -26,6 +25,11 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
 
         return error;
     }
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        setEmail(queryParams.get('email'))
+    }, [])
 
     const finishReset = function (e) {
         e.preventDefault();

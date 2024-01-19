@@ -62,14 +62,12 @@ export default function PhoneNumber({
   }, [phoneNumber, name])
 
   const sendMfaText = function () {
-    console.log("MFA")
     if (!recaptchaVerifier) {
       recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible'
       });
     }
     if (mfaSignIn && mfaResolver && recaptchaVerifier) {
-      console.log('everything here')
       const phoneInfoOptions = {
         multiFactorHint: mfaResolver.hints[selectedHint],
         session: mfaResolver.session
@@ -82,8 +80,6 @@ export default function PhoneNumber({
       } catch (error) {
         recaptchaVerifier.clear();
       }
-    } else {
-      console.log('mfasignin: ', mfaSignIn, 'mfaResolver: ', mfaResolver, 'recaptchaVerifier: ', recaptchaVerifier)
     }
   }
 
@@ -184,11 +180,16 @@ export default function PhoneNumber({
         mfaResolver.resolveSignIn(multiFactorAssertion).then((userCred) => {
           if (isResetPassword) {
             setResetPasswordOpen(true)
+            setSendSMS(false);
+            setMfaResolver(null);
+            setMfaSignIn(false);
           }
-          else if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult(userCred.user);
-          setSendSMS(false);
-          setMfaResolver(null);
-          setMfaSignIn(false);
+          else if (callbacks?.signInSuccessWithAuthResult) {
+            setSendSMS(false);
+            setMfaResolver(null);
+            setMfaSignIn(false);
+            callbacks.signInSuccessWithAuthResult(userCred.user);
+          }
         })
       } catch (error) {
         error = processNetworkError(error);

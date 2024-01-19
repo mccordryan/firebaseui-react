@@ -17,22 +17,28 @@ export default function FirebaseUI({
     throw new Error("FirebaseUI requires 'auth' prop.");
   }
 
-  const queryParams = new URLSearchParams(window.location.search)
-
-  const [emailLinkOpen, setEmailLinkOpen] = useState(
-    isSignInWithEmailLink(auth, window.location.href),
-  );
-
+  const [emailLinkOpen, setEmailLinkOpen] = useState(false);
+  const [queryParams, setQueryParams] = useState(null)
   const [sendSMS, setSendSMS] = useState(false);
   const [verify, setVerify] = useState(false);
-  const [isResetPassword, setIsResetPassword] = useState(queryParams.get('resetPassword') === "true")
-  const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
+  const [isResetPassword, setIsResetPassword] = useState(false) // only true when the user logs in from the reset password link
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false) // controls whether the reset password form is open
   const [mfaSignIn, setMfaSignIn] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
+  const [showComponent, setShowComponent] = useState(false);
 
   const [alert, setAlert] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    //initialize values based on query params
+    const params = new URLSearchParams(window.location.search)
+    setQueryParams(params)
+    setEmailLinkOpen(isSignInWithEmailLink(auth, window.location.href))
+    setIsResetPassword(params.get('resetPassword') === "true")
+    setShowComponent(true)
+  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -67,7 +73,7 @@ export default function FirebaseUI({
 
   return (
     <>
-      <div
+      {showComponent && <div
         style={{
           margin: '0 auto',
           width: '100%',
@@ -240,7 +246,7 @@ export default function FirebaseUI({
             <p style={{ padding: "0.25rem" }}>{error}</p>
           </div>
         )}
-      </div>
+      </div>}
     </>
   );
 }

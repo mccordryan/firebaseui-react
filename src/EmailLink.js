@@ -31,9 +31,7 @@ export default function EmailLink({
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
-  const [finishEmailSignIn, setFinishEmailSignIn] = useState(
-    isSignInWithEmailLink(auth, window.location.href),
-  );
+  const [finishEmailSignIn, setFinishEmailSignIn] = useState(false);
   const [name, setName] = useState("");
   const emailRef = useRef(null);
 
@@ -47,6 +45,10 @@ export default function EmailLink({
 
     return error;
   }
+
+  useEffect(() => {
+    setFinishEmailSignIn(isSignInWithEmailLink(auth, window.location.href))
+  }, [])
 
   useEffect(() => {
     setFormIsValid(isEmailValid() && (displayName == "required" ? name.length > 0 : true));
@@ -130,6 +132,8 @@ export default function EmailLink({
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
     }
   };
+
+
 
   return (
     <>

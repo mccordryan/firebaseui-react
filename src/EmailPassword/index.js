@@ -51,9 +51,9 @@ export default function EmailPassword({
 
   const [loading, setLoading] = useState(false);
 
-  const urlParams = new URLSearchParams(window.location.search);
 
-  const [email, setEmail] = useState(urlParams.get("email") || "");
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -73,6 +73,12 @@ export default function EmailPassword({
 
     return error;
   }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    let emailParam = urlParams.get("email") || ""
+    if (emailParam) setEmail(emailParam)
+  }, [])
 
 
   useEffect(() => {
@@ -97,9 +103,16 @@ export default function EmailPassword({
         })
       } catch (error) {
         error = processNetworkError(error);
-        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
-        setLoading(false)
-        if (callbacks?.signInFailure) callbacks.signInFailure(error)
+        if (error.code === "auth/multi-factor-auth-required") {
+          // signing them in didn't work because they have MFA enabled. Let's send them an MFA token
+          setMfaResolver(getMultiFactorResolver(auth, error))
+          setMfaSignIn(true);
+          setSendSMS(true);
+        } else {
+          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
+          setLoading(false)
+          if (callbacks?.signInFailure) callbacks.signInFailure(error)
+        }
       }
     } else {
 

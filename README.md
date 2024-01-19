@@ -20,16 +20,6 @@ Note that, while all buttons are displayed, the demo currently only supports Ema
    import FirebaseUIReact from "firebaseui-react";
    ```
 
-   **IMPORTANT - NEXT.JS ONLY**
-   If you are using this component in Next.js, you must import the component dynamically with server side rendering disabled. This is not a permanent requirement, and should be patched soon.
-
-   ```js
-   import dynamic from "next/dynamic";
-   const FirebaseUIReact = dynamic(() => import("firebaseui-react"), {
-     ssr: false,
-   });
-   ```
-
 3. Initialize a configuration object and a Firebase Auth instance:
 
    ```js
