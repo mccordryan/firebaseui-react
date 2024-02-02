@@ -45,7 +45,8 @@ export default function Provider({
   formInputStyles,
   formLabelStyles,
   formSmallButtonStyles,
-  customErrors
+  customErrors,
+  jsx
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -145,6 +146,10 @@ export default function Provider({
       formSmallButtonStyles={formSmallButtonStyles}
       customErrors={customErrors}
     />
+  ) : providerId == "jsx" ? (
+    <>
+      {jsx}
+    </>
   ) : (
     <button
       style={{

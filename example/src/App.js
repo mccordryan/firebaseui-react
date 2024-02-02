@@ -30,6 +30,10 @@ export default function Home() {
         provider: "emailpassword",
       },
       {
+        provider: "jsx",
+        jsx: <h1>Custom JSX</h1>
+      },
+      {
         provider: "google.com",
         customParameters: { prompt: "select_account" },
       },
