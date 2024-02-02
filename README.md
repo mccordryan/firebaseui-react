@@ -256,6 +256,24 @@ const config = {
 };
 ```
 
+**Passing Custom JSX**
+
+If you have a custom component or JSX you want to pass in between providers (i.e. a `<hr/>` tag separating email/password from OAuth providers), you can pass an object to `signInOptions` with a provider of `jsx` and a `jsx` field containing your component:
+
+```js
+const config = {
+  signInOptions: [
+    "emailpassword",
+    {
+      provider: "jsx",
+      jsx: <div>{/*Some custom JSX*/}</div>,
+    },
+    "google.com",
+  ],
+  //...
+};
+```
+
 # Success & Failure Callbacks
 
 To run some code after the user has been successfully authenticated (likely routing them to another page), or when authentication fails, you can pass custom callback functions into a `callbacks` object within your top-level configuration:
