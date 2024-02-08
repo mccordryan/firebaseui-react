@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { translate } from "../Languages";
 
 function passwordErrors({ password, passwordSpecs }) {
   const errors = [];
@@ -30,40 +31,41 @@ function passwordErrors({ password, passwordSpecs }) {
   return errors;
 }
 
-function formatPasswordRequirements(passwordSpecs) {
+function formatPasswordRequirements(passwordSpecs, language, customText) {
   let requirements = [];
 
-  requirements.push(`at least ${passwordSpecs?.minCharacters || 6} characters`);
+  requirements.push(`${translate("atLeast", language, customText)} ${passwordSpecs?.minCharacters || 6} ${translate("characters", language, customText)}`);
 
   let additionalReqs = [];
 
   if (passwordSpecs?.containsUppercase) {
-    additionalReqs.push('one uppercase letter');
+    additionalReqs.push(translate("oneUppercase", language, customText));
   }
 
   if (passwordSpecs?.containsLowercase) {
-    additionalReqs.push('one lowercase letter');
+    additionalReqs.push(translate("oneLowercase", language, customText));
   }
 
   if (passwordSpecs?.containsSpecialCharacter) {
-    additionalReqs.push('one special character');
+    additionalReqs.push(translate("oneSpecial", language, customText));
   }
 
   if (passwordSpecs?.containsNumber) {
-    additionalReqs.push('one number');
+    additionalReqs.push(translate("oneNumber", language, customText));
   }
 
   if (additionalReqs.length > 0) {
     const additionalReqString = additionalReqs.length > 1
-      ? additionalReqs.slice(0, -1).join(', ') + ', and ' + additionalReqs.slice(-1)
+      ? additionalReqs.slice(0, -1).join(', ') + `, ${translate("and", language, customText)} ` + additionalReqs.slice(-1)
       : additionalReqs[0];
-    requirements.push(`and contain at least ${additionalReqString}`);
+    requirements.push(`${translate("andContainAtLeast", language, customText)} ${additionalReqString}`);
   }
 
-  let formattedString = 'Strong passwords have ' + requirements.join(' ') + '.';
+  let formattedString = translate("strongPasswordsHave", language, customText) + " " + requirements.join(' ') + '.';
 
   return formattedString;
 }
+
 
 
 
@@ -83,7 +85,9 @@ export default function PasswordField({
   authType,
   emailValid,
   setError,
-  callbacks
+  callbacks,
+  language,
+  customText
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -110,7 +114,7 @@ export default function PasswordField({
         }}
       >
         <label htmlFor="password" style={{ ...labelStyle, ...formLabelStyles }}>
-          {newPassword ? "New Password" : "Password"}
+          {newPassword ? translate("newPassword", language, customText) : translate("password", language, customText)}
         </label>
         {authType != "signUp" && (
           <div style={{ fontSize: "0.875rem" }}>
@@ -122,7 +126,7 @@ export default function PasswordField({
                 e.preventDefault();
                 if (!newPassword) {
                   if (!emailValid) {
-                    setError("Please enter a valid email address before resetting your password.");
+                    setError(translate("emailDirtyNewPassword", language, customText));
                   } else {
                     setResettingPassword(true);
                     await onResetPassword();
@@ -135,7 +139,7 @@ export default function PasswordField({
             // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
             // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
             >
-              {newPassword ? "Skip" : resettingPassword ? "Sending..." : "Send reset link"}
+              {newPassword ? translate("skip", language, customText) : resettingPassword ? translate("sending", language, customText) : translate("sendResetLink", language, customText)}
             </button>
           </div>
         )}
@@ -148,7 +152,7 @@ export default function PasswordField({
           name="password"
           id="password"
           style={{ ...inputStyle, ...formInputStyles }}
-          placeholder={newPassword ? "your new password" : "your password"}
+          placeholder={newPassword ? translate("newPasswordPlaceholder", language, customText) : translate("passwordPlaceholder", language, customText)}
           autoComplete={newPassword ? "new-password" : "current-password"}
           aria-describedby="password-description"
           aria-invalid={!isValid ? "true" : "false"}
@@ -161,7 +165,7 @@ export default function PasswordField({
       <p style={descriptionStyle} id="password-description">
         {isDirty &&
           !isValid &&
-          formatPasswordRequirements(specs)}
+          formatPasswordRequirements(specs, language, customText)}
         &nbsp;
       </p>
     </div>

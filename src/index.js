@@ -100,6 +100,8 @@ export default function FirebaseUI({
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
             customErrors={config?.customErrors}
+            language={config?.language}
+            customText={config?.customText}
           />}
         {!sendSMS &&
           !emailLinkOpen && !verify && !resetPasswordOpen &&
@@ -128,6 +130,8 @@ export default function FirebaseUI({
                   formLabelStyles={config?.formLabelStyles}
                   formSmallButtonStyles={config?.formSmallButtonStyles}
                   customErrors={config?.customErrors}
+                  language={config?.language}
+                  customText={config?.customText}
                 />
               );
             } else if (typeof provider == "object") {
@@ -155,6 +159,8 @@ export default function FirebaseUI({
                   formLabelStyles={config?.formLabelStyles}
                   formSmallButtonStyles={config?.formSmallButtonStyles}
                   customErrors={config?.customErrors}
+                  language={config?.language}
+                  customText={config?.customText}
                 />
               );
             }
@@ -180,6 +186,8 @@ export default function FirebaseUI({
             customErrors={config?.customErrors}
             setMfaResolver={setMfaResolver}
             setMfaSignIn={setMfaSignIn}
+            language={config?.language}
+            customText={config?.customText}
           />
         )}
         {verify && (
@@ -188,6 +196,8 @@ export default function FirebaseUI({
             setAlert={setAlert}
             setError={setError}
             setSendSMS={setSendSMS}
+            language={config?.language}
+            customText={config?.customText}
           />
         )}
         {emailLinkOpen && (
@@ -210,6 +220,8 @@ export default function FirebaseUI({
             formLabelStyles={config?.formLabelStyles}
             formSmallButtonStyles={config?.formSmallButtonStyles}
             customErrors={config?.customErrors}
+            language={config?.language}
+            customText={config?.customText}
           />
         )}
 

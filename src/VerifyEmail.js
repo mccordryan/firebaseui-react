@@ -28,8 +28,6 @@ export default function VerifyEmail({ user, setAlert }) {
                 })
 
             }}>Send a link to {user.email}</button>}
-
-            {verified && <h1>aay nice</h1>}
         </>
     )
 }

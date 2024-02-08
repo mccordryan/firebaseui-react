@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import React, { useState, useEffect, useRef } from "react";
 import { errors } from "./Errors";
+import { translate, translateError } from "./Languages";
 
 export default function EmailLink({
   setEmailLinkOpen,
@@ -27,7 +28,9 @@ export default function EmailLink({
   formInputStyles,
   formLabelStyles,
   formSmallButtonStyles,
-  customErrors
+  customErrors,
+  language,
+  customText
 }) {
   const [email, setEmail] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
@@ -94,7 +97,7 @@ export default function EmailLink({
         } else {
           if (finishEmailSignIn && callbacks?.signInFailure)
             callbacks.signInFailure(error);
-          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+          setError(translateError(error.code, language, customText));
           throw new Error(error);
         }
       }
@@ -122,14 +125,14 @@ export default function EmailLink({
           handleCodeInApp: true,
           url: `${continueUrl}/?email=${email}${(name.length > 0) ? "&name=" + name : ""}`
         }).then(() => {
-          setAlert(`A sign in link has been sent to ${email}`);
+          setAlert(`${translate("signInLinkSent", language, customText)} ${email}`);
         });
       }
     } catch (error) {
       error = processNetworkError(error);
       if (finishEmailSignIn && callbacks?.signInFailure)
         callbacks.signInFailure(error);
-      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+      setError(setError(translateError(error.code, language, customText)));
     }
   };
 
@@ -138,10 +141,10 @@ export default function EmailLink({
   return (
     <>
       <h1 style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem', marginBottom: '0.5rem' }}
-      >Sign In With Email Link</h1>
+      >{translate("signInWithEmailLink", language, customText)}</h1>
 
       {finishEmailSignIn && (
-        <p style={{ fontSize: '0.875rem' }}>Signing you in...</p>
+        <p style={{ fontSize: '0.875rem' }}>{translate("signingYouIn", language, customText)}</p>
       )}
 
       {!finishEmailSignIn &&
@@ -169,7 +172,7 @@ export default function EmailLink({
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <label style={{ ...formLabelStyles }} htmlFor="email">Email Address<span style={{ color: "#FF0000" }}> *</span></label>
+              <label style={{ ...formLabelStyles }} htmlFor="email">{translate("email", language, customText)}<span style={{ color: "#FF0000" }}> *</span></label>
               <button
                 onClick={() => setEmailLinkOpen(false)}
                 style={{
@@ -181,7 +184,7 @@ export default function EmailLink({
                   ...formSmallButtonStyles
                 }}
               >
-                Cancel
+                {translate("cancel", language, customText)}
               </button>
             </div>
 
@@ -226,7 +229,7 @@ export default function EmailLink({
             }}
             onClick={(e) => submit(e)}
           >
-            {finishEmailSignIn ? "Finish Signing In" : "Send Email Link"}
+            {finishEmailSignIn ? translate("finishSigningIn", language, customText) : translate("sendEmailLink", language, customText)}
           </button>
         </form>}
 

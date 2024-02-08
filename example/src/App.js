@@ -46,7 +46,6 @@ export default function Home() {
       "facebook.com",
       {
         provider: "emaillink",
-        fullLabel: "bruh"
       },
       "anonymous",
     ],
@@ -54,7 +53,12 @@ export default function Home() {
     // formButtonStyles: { backgroundColor: "red" },
     // formDisabledStyles: { backgroundColor: "yellow" },
     // formInputStyles: { backgroundColor: "#ebebeb" }
-
+    language: "es",
+    customText: {
+      email: "booboo",
+      "password": "passy",
+      "signInWith": "yo mama use"
+    }
   };
 
   const [user, setUser] = useState(auth.currentUser);

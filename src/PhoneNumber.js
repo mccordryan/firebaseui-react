@@ -10,6 +10,7 @@ import {
 import { providerStyles } from "./providerStyles";
 import React, { useEffect, useRef, useState } from "react";
 import { errors } from "./Errors";
+import { translate, translateError } from "./Languages";
 
 export default function PhoneNumber({
   setSendSMS,
@@ -29,7 +30,9 @@ export default function PhoneNumber({
   formSmallButtonStyles,
   customErrors,
   setMfaResolver,
-  setMfaSignIn
+  setMfaSignIn,
+  language,
+  customText
 }) {
   //TODO: custom styles here too
   const styles = providerStyles["phonenumber"] || providerStyles["default"];
@@ -140,7 +143,7 @@ export default function PhoneNumber({
       const formattedNumber = countryCode + " " + phoneNumber;
       await signInWithPhoneNumber(auth, formattedNumber, recaptchaVerifier).then(
         (confirmationResult) => {
-          setAlert(`A code has been sent to ${phoneNumber}.`);
+          setAlert(`${translate("codeSent", language, customText)} ${phoneNumber}.`);
           window.confirmationResult = confirmationResult;
           setEnterCode(true);
         },
@@ -148,7 +151,7 @@ export default function PhoneNumber({
     } catch (error) {
 
       error = processNetworkError(error);
-      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+      setError(translateError(error.code, language, customText));
     }
   };
 
@@ -165,7 +168,7 @@ export default function PhoneNumber({
       });
     } catch (error) {
       error = processNetworkError(error);
-      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+      setError(translateError(error.code, language, customText));
       if (callbacks?.signInFailure) callbacks.signInFailure(error);
     }
   };
@@ -193,7 +196,7 @@ export default function PhoneNumber({
         })
       } catch (error) {
         error = processNetworkError(error);
-        setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+        setError(translateError(error.code, language, customText));
         if (callbacks?.signInFailure) callbacks.signInFailure(error);
       }
     } else if (mfaSignIn) {
@@ -211,7 +214,7 @@ export default function PhoneNumber({
   return (
     <>
       <h1 style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
-        {enterCode ? "Enter Code Below" : mfaSignIn ? "You'll need to verify your identity to continue" : "Send a Sign-In Text"}
+        {enterCode ? translate("enterCode", language, customText) : mfaSignIn ? translate("verifyIdentity", language, customText) : translate("sendSignInText", language, customText)}
       </h1>
 
       {!enterCode && !mfaSignIn && (
@@ -228,7 +231,7 @@ export default function PhoneNumber({
                 fontWeight: '500',
                 color: '#1a202c',
                 ...formLabelStyles
-              }}>Country Code<span style={{ color: "#FF0000" }}> *</span></label>
+              }}>{translate("countryCode", language, customText)}<span style={{ color: "#FF0000" }}> *</span></label>
               <button
                 onClick={() => setSendSMS(false)}
                 style={{
@@ -240,7 +243,7 @@ export default function PhoneNumber({
                   ...formSmallButtonStyles
                 }}
               >
-                Cancel
+                {translate("cancel", language, customText)}
               </button>
             </div>
             <select autocomplete="tel-country-code" name="countrycode" id="countrycode" style={{
@@ -370,12 +373,12 @@ export default function PhoneNumber({
               fontWeight: '500',
               color: '#1a202c',
               ...formLabelStyles
-            }}>Phone Number<span style={{ color: "#FF0000" }}> *</span></label>
+            }}>{translate("phoneNumber", language, customText)}<span style={{ color: "#FF0000" }}> *</span></label>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(handlePhoneInput(e.target.value))}
-                placeholder="Phone Number"
+                placeholder="555-555-5555"
                 style={{
                   border: '1px solid #e2e8f0', // gray-300
                   borderRadius: '0.375rem',
@@ -395,11 +398,12 @@ export default function PhoneNumber({
                   fontWeight: '500',
                   color: '#1a202c',
                   ...formLabelStyles
-                }} htmlFor="name">Name<span style={{ color: "#FF0000" }}> *</span></label> : <label style={{ ...formLabelStyles }} htmlFor="name">Name</label>}
+                }} htmlFor="name">{translate("name", language, customText)}<span style={{ color: "#FF0000" }}> *</span></label> : <label style={{ ...formLabelStyles }} htmlFor="name">{translate("name", language, customText)}</label>}
                 <input
                   id="name"
                   type="text"
                   value={name}
+                  placeholder={translate("namePlaceholder", language, customText)}
                   onChange={(e) => setName(e.target.value)}
                   style={{
                     border: '1px solid #e2e8f0', // gray-300
@@ -425,7 +429,7 @@ export default function PhoneNumber({
             <option value={index} key={index}>xxx-xxx-{hint.phoneNumber?.slice(-4)}</option>
           ))}
         </select>
-        <p>A confirmation text will be sent to your phone number ending in {mfaResolver?.hints[selectedHint]?.phoneNumber?.slice(-4)}</p>
+        <p>{translate("confirmationTextWillBeSent", language, customText)} {mfaResolver?.hints[selectedHint]?.phoneNumber?.slice(-4)}</p>
       </div>}
       {enterCode && (
         <>
@@ -441,7 +445,7 @@ export default function PhoneNumber({
                 ...formSmallButtonStyles
               }}
             >
-              Cancel
+              {translate("cancel", language, customText)}
             </button>
           </div>
           <form style={{ display: 'flex', gap: '0.5rem' }}>
@@ -492,7 +496,7 @@ export default function PhoneNumber({
         }}
       >
         <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-          {enterCode ? "Finish Signing In" : "Send Text"}
+          {enterCode ? translate("finishSigningIn", language, customText) : translate("sendText", language, customText)}
         </span>
       </button>
     </>

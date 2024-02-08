@@ -12,7 +12,9 @@ export default function NameField({
     disabled = false,
     formInputStyles,
     formLabelStyles,
-    setNameValid
+    setNameValid,
+    language,
+    customText
 }) {
     const [isDirty, setIsDirty] = useState(false);
     const isValid = /^[a-zA-Z'-\s]+$/.test(value); //only letters, apostrophes, and hyphens
@@ -26,7 +28,7 @@ export default function NameField({
     return (
         <div>
             <label htmlFor="email" style={{ ...labelStyle, ...formLabelStyles }}>
-                Name
+                {translate("name", language, customText)}
             </label>
             <div style={{ marginTop: "0.5rem" }}>
                 <input
@@ -35,7 +37,7 @@ export default function NameField({
                     name="name"
                     id="name"
                     style={{ ...inputStyle, ...formInputStyles }}
-                    placeholder="Your Name"
+                    placeholder={translate("namePlaceholder", language, customText)}
                     autoComplete="name"
                     aria-describedby="name-description"
                     aria-invalid={!isValid ? "true" : "false"}
@@ -46,7 +48,7 @@ export default function NameField({
                 />
             </div>
             <p style={descriptionStyle} id="name-description">
-                {isDirty && !isValid && "Please enter a valid name."}&nbsp;
+                {isDirty && !isValid && translate("nameDirty", language, customText)}&nbsp;
             </p>
         </div>
     );

@@ -6,8 +6,9 @@ import { errors } from "./Errors";
 import EmailField from "./EmailPassword/EmailField";
 import PasswordField from "./EmailPassword/PasswordField";
 import { descriptionStyle, invalidInputStyle, labelStyle, validInputStyle, buttonStyle } from "./EmailPassword/defaultStyles";
+import { translate, translateError } from "./Languages";
 
-export default function ResetPassword({ passwordSpecs, callbacks, auth, formInputStyles, formDisabledStyles, formLabelStyles, formButtonStyles, customErrors, setError, setAlert, }) {
+export default function ResetPassword({ passwordSpecs, callbacks, auth, formInputStyles, formDisabledStyles, formLabelStyles, formButtonStyles, customErrors, setError, setAlert, language, customText }) {
     const [password, setPassword] = useState("");
     const [formIsValid, setFormIsValid] = useState(false);
 
@@ -43,7 +44,7 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
             })
         } catch (error) {
             error = processNetworkError(error);
-            setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+            setError(translateError(error.code, language, customText));
             if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
             throw new Error(signInError.code);
         }
@@ -89,9 +90,10 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
 
         <form style={{ width: "100%", gap: "1rem" }} onSubmit={finishReset}>
             <div>
-                <label style={{ ...labelStyle, ...formLabelStyles }}>Email</label>
+                <label style={{ ...labelStyle, ...formLabelStyles }}>{translate("email", language, customText)}</label>
                 <input
                     value={email}
+                    placeholder={translate("emailPlaceholder", language, customText)}
                     style={{ cursor: "not-allowed", marginTop: "0.5rem", ...formInputStyles, ...validInputStyle }}
                     disabled={true}
                 />
@@ -112,11 +114,13 @@ export default function ResetPassword({ passwordSpecs, callbacks, auth, formInpu
                     setPasswordValid={setFormIsValid}
                     setError={setError}
                     callbacks={callbacks}
+                    language={language}
+                    customText={customText}
                 />
             </div>
 
             <button tabIndex="3" type="submit" disabled={loading || !formIsValid} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
-                {loading ? "Loading..." : "Reset Password"}
+                {loading ? translate("loading", language, customText) : translate("resetPassword", language, customText)}
             </button>
 
         </form>

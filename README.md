@@ -304,19 +304,46 @@ It is advised that you use the `signInSuccessWithAuthResult` callback for routin
 
 Because using Firebase's default reset password functionality routes you to a third party page with limited customizability, this package handles password resets by sending a regular sign in email (the same one sent by the "emaillink" provider). This workaround allows password resets to be handled locally within your project.
 
-# Custom Error Handling
+# Languages
 
-To override the default error messages, or set a message on an unhandled error, you can pass a `customErrors` object to your top level configuration. The keys of this object should be string-formatted error codes and the values should be the desired error message:
+`firebaseui-react` currently supports 9 commonly used languages. If no language is set, the component will default to English. You can add them by adding a language field to your config:
 
 ```js
 const config = {
   signInOptions: ["google.com"],
-  customErrors: {
-    "auth/cancelled-popup-request": "Womp Womp"
-    "auth/invalid-email": "", //Display No Error At All
-  }
-}
+  language: "es", // change the language to spanish
+};
 ```
+
+The following are currently supported languages and their accompanying language codes:
+
+- Arabic (ar)
+- German (de)
+- English (en)
+- Spanish (es)
+- French (fr)
+- Hindi (hi)
+- Portugese (pt)
+- Russian (ru)
+- Simplified Chinese (zh)
+
+# Custom Text & Error Handling
+
+All text and errors in the component can be completely overridden. This is done by passing a `customText` object to your configuration, containing the text key to override and your desired text. For a full list of supported text keys, see the end of this page. Errors should be passed as a child object:
+
+```js
+const config = {
+  signInOptions: ["google.com"],
+  customText: {
+    emailPlaceholder: "Enter Your Email Address Here",
+    errors: {
+      "auth/operation-not-allowed": "We are all doomed",
+    },
+  },
+};
+```
+
+Note that for buttons, the `fullLabel` field will always take precedence over anything else, including `customText`.
 
 # Email/Password Options
 
@@ -462,4 +489,75 @@ const config = {
     },
   },
 };
+```
+
+# List of Supported Custom Text Keys
+
+Below is a list of all of the currently supported text keys that can be overridden, alongside their english translations. If you would like to see these values for other languages, refer to `Languages.js` in the source code. Note that errors work differently than regular text keys, so any error code you might add will be handled if it occurs, regardless of whether or not it is listed below.
+
+```js
+"en": {
+        "email": "Email Address",
+        "emailPlaceholder": "you@example.com",
+        "password": "Password",
+        "passwordPlaceholder": "your password",
+        "name": "Name",
+        "namePlaceholder": "your name",
+        "sendResetLink": "Send Reset Link",
+        "loginButton": "Log in or create account",
+        "signInWith": "Sign in with",
+        "loading": "Loading...",
+        "phoneNumber": "Phone Number",
+        "emailLink": "Email Link",
+        "signInAsGuest": "Sign in as Guest",
+        "signInWithEmailLink": "Sign in with Email Link",
+        "sendEmailLink": "Send Email Link",
+        "cancel": "Cancel",
+        "emailDirty": "Please enter a valid email address.",
+        "resetPasswordSent": "A reset-password email has been sent to",
+        "resetPassword": "Reset Password",
+        "nameDirty": "Please enter a valid name",
+        "signInLinkSent": "A sign in link has been sent to",
+        "somethingWentWrong": "Something went wrong. Try again later.",
+        "signingYouIn": "Signing you in...",
+        "codeSent": "A code has been sent to",
+        "enterCode": "Enter code below",
+        "verifyIdentity": "You'll need to verify your identity to continue",
+        "verifyEmail": "You'll need to verify your email to continue",
+        "sendSignInText": "Send a sign in text",
+        "countryCode": "Country Code",
+        "confirmationTextWillBeSent": "A confirmation text will be sent to your phone number ending in",
+        "finishSigningIn": "Finish signing in",
+        "sendText": "Send text",
+        "sendALinkTo": "Send a link to",
+        "oneUppercase": "one uppercase letter",
+        "oneLowercase": "one lowercase letter",
+        "oneSpecial": "one special character",
+        "oneNumber": "one number",
+        "atLeast": "at least",
+        "characters": "characters",
+        "and": "and",
+        "andContainAtLeast": "and contain at least",
+        "strongPasswordsHave": "Strong passwords have",
+        "newPassword": "New Password",
+        "newPasswordPlaceholder": "your new password",
+        "emailDirtyNewPassword": "Please enter a valid email address to reset your password",
+        "skip": "Skip",
+
+        "errors": {
+
+            "auth/invalid-login-credentials": "Incorrect email or password",
+            "auth/email-already-in-use": "This email address is already in use",
+            "auth/invalid-email": "Please provide a valid email address",
+            "auth/invalid-phone-number": "Please provide a valid phone number",
+            "auth/invalid-verification-code": "The code provided is invalid",
+            "auth/popup-closed-by-user": "The popup was closed",
+            "auth/cancelled-popup-request": "The popup was closed",
+            "auth/api-key-not-valid.-please-pass-a-valid-api-key.": "The Firebase API key is not valid.",
+            "auth/invalid-credential": "Incorrect email or password"
+
+        },
+
+
+    },
 ```

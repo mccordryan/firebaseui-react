@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { translate } from "../Languages";
 
 export default function EmailField({
   value,
@@ -12,7 +13,9 @@ export default function EmailField({
   disabled = false,
   formInputStyles,
   formLabelStyles,
-  setEmailValid
+  setEmailValid,
+  language,
+  customText
 }) {
   const [isDirty, setIsDirty] = useState(false);
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -26,7 +29,7 @@ export default function EmailField({
   return (
     <div>
       <label htmlFor="email" style={{ ...labelStyle, ...formLabelStyles }}>
-        Email address
+        {translate("email", language, customText)}
       </label>
       <div style={{ marginTop: "0.5rem" }}>
         <input
@@ -35,7 +38,7 @@ export default function EmailField({
           name="email"
           id="email"
           style={{ ...inputStyle, ...formInputStyles }}
-          placeholder="you@example.com"
+          placeholder={translate("emailPlaceholder", language, customText)}
           autoComplete="email"
           aria-describedby="email-description"
           aria-invalid={!isValid ? "true" : "false"}
@@ -47,7 +50,7 @@ export default function EmailField({
         />
       </div>
       <p style={descriptionStyle} id="email-description">
-        {isDirty && !isValid && "Please enter a valid email address."}&nbsp;
+        {isDirty && !isValid && translate("emailDirty", language, customText)}&nbsp;
       </p>
     </div>
   );

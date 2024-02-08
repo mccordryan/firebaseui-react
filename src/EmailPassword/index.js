@@ -27,6 +27,7 @@ import {
   cancelButtonStyle,
 } from "./defaultStyles";
 import NameField from "./NameField";
+import { translate, translateError } from "../Languages";
 
 export default function EmailPassword({
   auth,
@@ -46,7 +47,9 @@ export default function EmailPassword({
   formSmallButtonStyles,
   customErrors,
   setMfaResolver,
-  fullLabel
+  fullLabel,
+  language,
+  customText
 }) {
 
   const [loading, setLoading] = useState(false);
@@ -109,7 +112,7 @@ export default function EmailPassword({
           setMfaSignIn(true);
           setSendSMS(true);
         } else {
-          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
+          setError(translateError(error.code, language, customText));
           setLoading(false)
           if (callbacks?.signInFailure) callbacks.signInFailure(error)
         }
@@ -152,14 +155,14 @@ export default function EmailPassword({
               setSendSMS(true);
             } else {
               // signing in didn't work for a different reason
-              setError(customErrors && customErrors[err2.code] !== undefined ? customErrors[err2.code] : errors[err2.code] || err2.code);
+              setError(translateError(err2.code, language, customText));
               if (callbacks?.signInFailure) callbacks.signInFailure(err2)
             }
           }
         } else {
           // creating an account didn't work for some other reason
           setLoading(false);
-          setError(customErrors && customErrors[err.code] !== undefined ? customErrors[err.code] : errors[err.code] || err.code);
+          setError(translateError(err.code, language, customText));
           if (callbacks?.signInFailure) callbacks.signInFailure(err)
         }
       }
@@ -177,11 +180,11 @@ export default function EmailPassword({
         handleCodeInApp: true,
         url: url.toString()
       }).then(() => {
-        setAlert(`A reset-password email has been sent to ${email}.`);
+        setAlert(`${translate("resetPasswordLink", language, customText)} ${email}.`);
       });
     } catch (error) {
       error = processNetworkError(error);
-      setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || error.code);
+      setError(translateError(error.code, language, customText));
     }
   }
 
@@ -198,7 +201,10 @@ export default function EmailPassword({
         disabled={loading}
         formInputStyles={formInputStyles}
         formLabelStyles={formLabelStyles}
-        setNameValid={setNameValid} />}
+        setNameValid={setNameValid}
+        language={language}
+        customText={customText}
+      />}
 
       <EmailField
         value={email}
@@ -211,6 +217,8 @@ export default function EmailPassword({
         formInputStyles={formInputStyles}
         formLabelStyles={formLabelStyles}
         setEmailValid={setEmailValid}
+        language={language}
+        customText={customText}
       />
 
       <PasswordField
@@ -230,17 +238,19 @@ export default function EmailPassword({
         authType={authType}
         emailValid={emailValid}
         setError={setError}
+        language={language}
+        customText={customText}
       />
 
       <button tabIndex="3" type="submit" disabled={loading || !formIsValid} style={{ ...buttonStyle, ...formButtonStyles, ...(formIsValid ? {} : { backgroundColor: "#696969", borderColor: "#2e2e2e", ...formDisabledStyles }) }}>
-        {loading ? "Loading..." : fullLabel || "Log in or create account"}
+        {loading ? translate("loading", language, customText) : fullLabel || translate("loginButton", language, customText)}
       </button>
       {false && (
         <button
           style={{ ...cancelButtonStyle, ...formSmallButtonStyles, }}
           onClick={() => setEmailExists(null)}
         >
-          Cancel
+          {translate("cancel", language, customText)}
         </button>
       )}
     </form>

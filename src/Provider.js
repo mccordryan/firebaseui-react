@@ -17,6 +17,7 @@ import { providerStyles } from "./providerStyles";
 import EmailPassword from "./EmailPassword";
 import PhoneNumber from "./PhoneNumber";
 import { errors } from "./Errors";
+import { translate, translateError } from "./Languages";
 
 export default function Provider({
   auth,
@@ -46,7 +47,9 @@ export default function Provider({
   formLabelStyles,
   formSmallButtonStyles,
   customErrors,
-  jsx
+  jsx,
+  language,
+  customText
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -60,7 +63,11 @@ export default function Provider({
   }
 
   if (providerId == "anonymous" && !fullLabel) {
-    fullLabel = "Sign In As Guest";
+    fullLabel = translate("signInAsGuest", language, customText);
+  }
+
+  if (providerId == "emaillink" && !fullLabel) {
+    fullLabel = translate("signInWithEmailLink", language, customText);
   }
 
   const providerMap = {
@@ -114,7 +121,8 @@ export default function Provider({
           setMfaSignIn(true);
           setSendSMS(true);
         } else {
-          setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
+          setError(translateError(error.code, language, customText));
+
           callbacks?.signInFailure(error);
         }
       }
@@ -145,6 +153,8 @@ export default function Provider({
       formLabelStyles={formLabelStyles}
       formSmallButtonStyles={formSmallButtonStyles}
       customErrors={customErrors}
+      language={language}
+      customText={customText}
     />
   ) : providerId == "jsx" ? (
     <>
@@ -169,7 +179,7 @@ export default function Provider({
     >
       {icon ? icon : styles.icon}
       <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-        {fullLabel ? fullLabel : `Sign in with ${providerName}`}
+        {fullLabel ? fullLabel : `${translate("signInWith", language, customText)} ${providerName}`}
       </span>
     </button>
   );
