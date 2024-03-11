@@ -11,7 +11,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 
 export default function Home() {
-
   const UIConfig = {
     continueUrl: "http://localhost:8080",
     // requireVerifyEmail: true,
@@ -24,14 +23,14 @@ export default function Home() {
         console.error(error);
       },
     },
-    passwordSpecs: { minCharacters: 6, },
+    passwordSpecs: { minCharacters: 6 },
     signInOptions: [
       {
         provider: "emailpassword",
       },
       {
         provider: "jsx",
-        jsx: <h1>Custom JSX</h1>
+        jsx: <h1>Custom JSX</h1>,
       },
       {
         provider: "google.com",
@@ -50,33 +49,28 @@ export default function Home() {
       "anonymous",
     ],
 
-    // formButtonStyles: { backgroundColor: "red" },
+    // formSmallButtonStyles: { backgroundColor: "red" },
     // formDisabledStyles: { backgroundColor: "yellow" },
     // formInputStyles: { backgroundColor: "#ebebeb" }
-    language: "es",
     customText: {
-      email: "booboo",
-      "password": "passy",
-      "signInWith": "yo mama use"
-    }
+      signInWith: "yo mama use",
+    },
   };
 
   const [user, setUser] = useState(auth.currentUser);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       setUser(user);
     });
 
     return () => unsubscribe();
   }, [auth]);
 
-
-
   return (
     <main>
       <h1>React FirebaseUI Component Demo</h1>
-      <div style={{ width: '25vw' }}>
+      <div style={{ width: "25vw" }}>
         <FirebaseUI auth={auth} config={UIConfig} />
       </div>
       {user && (

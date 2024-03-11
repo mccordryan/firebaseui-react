@@ -1,11 +1,14 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { translate } from "../Languages";
 
 function passwordErrors({ password, passwordSpecs }) {
   const errors = [];
-  const minCharacters = Math.max(6, passwordSpecs?.minCharacters || 6);
+  const minCharacters = Math.max(
+    6,
+    passwordSpecs?.minCharacters || 6,
+  );
   if (password.length < minCharacters)
     errors.push(`be at least ${minCharacters} characters long`);
 
@@ -31,23 +34,37 @@ function passwordErrors({ password, passwordSpecs }) {
   return errors;
 }
 
-function formatPasswordRequirements(passwordSpecs, language, customText) {
+function formatPasswordRequirements(
+  passwordSpecs,
+  language,
+  customText,
+) {
   let requirements = [];
 
-  requirements.push(`${translate("atLeast", language, customText)} ${passwordSpecs?.minCharacters || 6} ${translate("characters", language, customText)}`);
+  requirements.push(
+    `${translate("atLeast", language, customText)} ${
+      passwordSpecs?.minCharacters || 6
+    } ${translate("characters", language, customText)}`,
+  );
 
   let additionalReqs = [];
 
   if (passwordSpecs?.containsUppercase) {
-    additionalReqs.push(translate("oneUppercase", language, customText));
+    additionalReqs.push(
+      translate("oneUppercase", language, customText),
+    );
   }
 
   if (passwordSpecs?.containsLowercase) {
-    additionalReqs.push(translate("oneLowercase", language, customText));
+    additionalReqs.push(
+      translate("oneLowercase", language, customText),
+    );
   }
 
   if (passwordSpecs?.containsSpecialCharacter) {
-    additionalReqs.push(translate("oneSpecial", language, customText));
+    additionalReqs.push(
+      translate("oneSpecial", language, customText),
+    );
   }
 
   if (passwordSpecs?.containsNumber) {
@@ -55,19 +72,29 @@ function formatPasswordRequirements(passwordSpecs, language, customText) {
   }
 
   if (additionalReqs.length > 0) {
-    const additionalReqString = additionalReqs.length > 1
-      ? additionalReqs.slice(0, -1).join(', ') + `, ${translate("and", language, customText)} ` + additionalReqs.slice(-1)
-      : additionalReqs[0];
-    requirements.push(`${translate("andContainAtLeast", language, customText)} ${additionalReqString}`);
+    const additionalReqString =
+      additionalReqs.length > 1
+        ? additionalReqs.slice(0, -1).join(", ") +
+          `, ${translate("and", language, customText)} ` +
+          additionalReqs.slice(-1)
+        : additionalReqs[0];
+    requirements.push(
+      `${translate(
+        "andContainAtLeast",
+        language,
+        customText,
+      )} ${additionalReqString}`,
+    );
   }
 
-  let formattedString = translate("strongPasswordsHave", language, customText) + " " + requirements.join(' ') + '.';
+  let formattedString =
+    translate("strongPasswordsHave", language, customText) +
+    " " +
+    requirements.join(" ") +
+    ".";
 
   return formattedString;
 }
-
-
-
 
 export default function PasswordField({
   value,
@@ -81,13 +108,14 @@ export default function PasswordField({
   onResetPassword = null,
   formInputStyles,
   formLabelStyles,
+  formSmallButtonStyles,
   setPasswordValid,
   authType,
   emailValid,
   setError,
   callbacks,
   language,
-  customText
+  customText,
 }) {
   const [show, setShow] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -95,13 +123,15 @@ export default function PasswordField({
   const [resettingPassword, setResettingPassword] = useState(false);
 
   const isValid =
-    passwordErrors({ password: value, passwordSpecs: specs }).length === 0;
+    passwordErrors({ password: value, passwordSpecs: specs })
+      .length === 0;
 
-  const inputStyle = isDirty && !isValid ? invalidInputStyle : validInputStyle;
+  const inputStyle =
+    isDirty && !isValid ? invalidInputStyle : validInputStyle;
 
   useEffect(() => {
     setPasswordValid(isValid);
-  }, [value])
+  }, [value]);
 
   return (
     <div>
@@ -113,33 +143,53 @@ export default function PasswordField({
           justifyContent: "space-between",
         }}
       >
-        <label htmlFor="password" style={{ ...labelStyle, ...formLabelStyles }}>
-          {newPassword ? translate("newPassword", language, customText) : translate("password", language, customText)}
+        <label
+          htmlFor="password"
+          style={{ ...labelStyle, ...formLabelStyles }}
+        >
+          {newPassword
+            ? translate("newPassword", language, customText)
+            : translate("password", language, customText)}
         </label>
         {authType != "signUp" && (
           <div style={{ fontSize: "0.875rem" }}>
             <button
-              style={{ fontWeight: "600", color: emailValid ? "#2563eb" : "#3b3b3b" }}
+              style={{
+                fontWeight: "600",
+                color: emailValid ? "#2563eb" : "#3b3b3b",
+                ...formSmallButtonStyles,
+              }}
               type="button"
               tabIndex="4"
-              onClick={async (e) => {
+              onClick={async e => {
                 e.preventDefault();
                 if (!newPassword) {
                   if (!emailValid) {
-                    setError(translate("emailDirtyNewPassword", language, customText));
+                    setError(
+                      translate(
+                        "emailDirtyNewPassword",
+                        language,
+                        customText,
+                      ),
+                    );
                   } else {
                     setResettingPassword(true);
                     await onResetPassword();
                     setResettingPassword(false);
                   }
                 } else {
-                  if (callbacks?.signInSuccessWithAuthResult) callbacks.signInSuccessWithAuthResult();
+                  if (callbacks?.signInSuccessWithAuthResult)
+                    callbacks.signInSuccessWithAuthResult();
                 }
               }}
-            // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
-            // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
+              // onMouseOver={(e) => (e.target.style.color = "#3b82f6")}
+              // onMouseOut={(e) => (e.target.style.color = "#2563eb")}
             >
-              {newPassword ? translate("skip", language, customText) : resettingPassword ? translate("sending", language, customText) : translate("sendResetLink", language, customText)}
+              {newPassword
+                ? translate("skip", language, customText)
+                : resettingPassword
+                ? translate("sending", language, customText)
+                : translate("sendResetLink", language, customText)}
             </button>
           </div>
         )}
@@ -152,12 +202,22 @@ export default function PasswordField({
           name="password"
           id="password"
           style={{ ...inputStyle, ...formInputStyles }}
-          placeholder={newPassword ? translate("newPasswordPlaceholder", language, customText) : translate("passwordPlaceholder", language, customText)}
-          autoComplete={newPassword ? "new-password" : "current-password"}
+          placeholder={
+            newPassword
+              ? translate(
+                  "newPasswordPlaceholder",
+                  language,
+                  customText,
+                )
+              : translate("passwordPlaceholder", language, customText)
+          }
+          autoComplete={
+            newPassword ? "new-password" : "current-password"
+          }
           aria-describedby="password-description"
           aria-invalid={!isValid ? "true" : "false"}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={e => setValue(e.target.value)}
           onBlur={() => setIsDirty(true)}
           tabIndex="2"
         />
