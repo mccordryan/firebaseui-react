@@ -49,7 +49,7 @@ export default function Provider({
   customErrors,
   jsx,
   language,
-  customText
+  customText,
 }) {
   if (!providerName) {
     if (providerId == "emaillink") {
@@ -58,7 +58,8 @@ export default function Provider({
       providerName = "Phone Number";
     } else {
       let match = providerId.match(/^([^.]+)/);
-      providerName = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+      providerName =
+        match[1].charAt(0).toUpperCase() + match[1].slice(1);
     }
   }
 
@@ -67,7 +68,11 @@ export default function Provider({
   }
 
   if (providerId == "emaillink" && !fullLabel) {
-    fullLabel = translate("signInWithEmailLink", language, customText);
+    fullLabel = translate(
+      "signInWithEmailLink",
+      language,
+      customText,
+    );
   }
 
   const providerMap = {
@@ -90,7 +95,7 @@ export default function Provider({
   }
 
   if (provider && scopes) {
-    scopes.forEach((scope) => {
+    scopes.forEach(scope => {
       provider.addScope(scope);
     });
   }
@@ -109,28 +114,41 @@ export default function Provider({
         providerId == "anonymous"
           ? signInAnonymously(auth)
           : signInFlow == "redirect"
-            ? signInWithRedirect(auth, provider, browserPopupRedirectResolver)
-            : signInWithPopup(auth, provider, browserPopupRedirectResolver);
+          ? signInWithRedirect(
+              auth,
+              provider,
+              browserPopupRedirectResolver,
+            )
+          : signInWithPopup(
+              auth,
+              provider,
+              browserPopupRedirectResolver,
+            );
       try {
-        await flowFunction().then((user) => {
+        await flowFunction().then(user => {
           callbacks?.signInSuccessWithAuthResult(user);
         });
       } catch (error) {
         if (error.code === "auth/multi-factor-auth-required") {
-          setMfaResolver(getMultiFactorResolver(auth, error))
+          setMfaResolver(getMultiFactorResolver(auth, error));
           setMfaSignIn(true);
           setSendSMS(true);
         } else {
           setError(translateError(error.code, language, customText));
-
-          callbacks?.signInFailure(error);
+          if (typeof callbacks?.signInFailure === "function") {
+            callbacks?.signInFailure(error);
+          }
         }
       }
     }
   };
 
-  const styles = providerStyles[providerId] || providerStyles["default"];
-  const buttonStyles = { ...styles?.buttonStyles, ...(customStyles || null) };
+  const styles =
+    providerStyles[providerId] || providerStyles["default"];
+  const buttonStyles = {
+    ...styles?.buttonStyles,
+    ...(customStyles || null),
+  };
 
   return providerId == "emailpassword" ? (
     <EmailPassword
@@ -157,29 +175,33 @@ export default function Provider({
       customText={customText}
     />
   ) : providerId == "jsx" ? (
-    <>
-      {jsx}
-    </>
+    <>{jsx}</>
   ) : (
     <button
       style={{
-        display: 'flex',
-        gap: '0.75rem',
-        padding: '0.5rem 0.75rem',
-        borderRadius: '0.375rem',
-        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        border: '1px solid #e5e7eb',
-        cursor: 'pointer',
-        ...buttonStyles
+        display: "flex",
+        gap: "0.75rem",
+        padding: "0.5rem 0.75rem",
+        borderRadius: "0.375rem",
+        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        border: "1px solid #e5e7eb",
+        cursor: "pointer",
+        ...buttonStyles,
       }}
       onClick={submit}
     >
       {icon ? icon : styles.icon}
-      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-        {fullLabel ? fullLabel : `${translate("signInWith", language, customText)} ${providerName}`}
+      <span style={{ fontSize: "0.875rem", fontWeight: "500" }}>
+        {fullLabel
+          ? fullLabel
+          : `${translate(
+              "signInWith",
+              language,
+              customText,
+            )} ${providerName}`}
       </span>
     </button>
   );
