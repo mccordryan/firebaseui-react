@@ -107,7 +107,10 @@ export default function EmailLink({
           setEmailLinkOpen(false);
           setSendSMS(true);
         } else {
-          if (finishEmailSignIn && callbacks?.signInFailure)
+          if (
+            finishEmailSignIn &&
+            typeof callbacks?.signInFailure === "function"
+          )
             callbacks?.signInFailure(error);
           setError(translateError(error.code, language, customText));
           throw new Error(error);
@@ -152,7 +155,10 @@ export default function EmailLink({
       }
     } catch (error) {
       error = processNetworkError(error);
-      if (finishEmailSignIn && callbacks?.signInFailure)
+      if (
+        finishEmailSignIn &&
+        typeof callbacks?.signInFailure === "function"
+      )
         callbacks?.signInFailure(error);
       setError(
         setError(translateError(error.code, language, customText)),

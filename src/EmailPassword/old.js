@@ -150,7 +150,7 @@ export default function EmailPassword({
                   : errors[signInError.code] ||
                   "Something went wrong. Try again later.",
               );
-              if (callbacks?.signInFailure)
+              if (typeof callbacks?.signInFailure === "function")
                 callbacks?.signInFailure(signInError);
               throw new Error(signInError.code);
             }
@@ -163,12 +163,12 @@ export default function EmailPassword({
             );
 
             setError(customErrors && customErrors[signInError.code] !== undefined ? customErrors[signInError.code] : errors[signInError.code] || "Something went wrong. Try again later.");
-            if (callbacks?.signInFailure) callbacks?.signInFailure(signInError);
+            if (typeof callbacks?.signInFailure === "function") callbacks?.signInFailure(signInError);
             throw new Error(signInError.code);
           }
         } else if (signUpError.code) {
           setError(customErrors && customErrors[signUpError.code] !== undefined ? customErrors[signUpError.code] : errors[signUpError.code] || "Something went wrong. Try again later.");
-          if (callbacks?.signInFailure) callbacks?.signInFailure(signUpError);
+          if (typeof callbacks?.signInFailure === "function") callbacks?.signInFailure(signUpError);
           throw new Error(signUpError.code);
         }
       }
@@ -193,7 +193,7 @@ export default function EmailPassword({
       });
     } catch (error) {
       setError(customErrors && customErrors[error.code] !== undefined ? customErrors[error.code] : errors[error.code] || "Something went wrong. Try again later.");
-      if (callbacks?.signInFailure) callbacks?.signInFailure(error);
+      if (typeof callbacks?.signInFailure === "function") callbacks?.signInFailure(error);
       throw new Error(error.code);
     }
   } else {

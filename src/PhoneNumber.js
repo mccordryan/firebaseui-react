@@ -203,7 +203,8 @@ export default function PhoneNumber({
     } catch (error) {
       error = processNetworkError(error);
       setError(translateError(error.code, language, customText));
-      if (callbacks?.signInFailure) callbacks?.signInFailure(error);
+      if (typeof callbacks?.signInFailure === "function")
+        callbacks?.signInFailure(error);
     }
   };
 
@@ -236,7 +237,8 @@ export default function PhoneNumber({
       } catch (error) {
         error = processNetworkError(error);
         setError(translateError(error.code, language, customText));
-        if (callbacks?.signInFailure) callbacks?.signInFailure(error);
+        if (typeof callbacks?.signInFailure === "function")
+          callbacks?.signInFailure(error);
       }
     } else if (mfaSignIn) {
       sendMfaText();

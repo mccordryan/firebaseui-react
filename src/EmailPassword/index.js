@@ -116,7 +116,7 @@ export default function EmailPassword({
         } else {
           setError(translateError(error.code, language, customText));
           setLoading(false);
-          if (callbacks?.signInFailure)
+          if (typeof callbacks?.signInFailure === "function")
             callbacks?.signInFailure(error);
         }
       }
@@ -174,7 +174,7 @@ export default function EmailPassword({
               setError(
                 translateError(err2.code, language, customText),
               );
-              if (callbacks?.signInFailure)
+              if (typeof callbacks?.signInFailure === "function")
                 callbacks?.signInFailure(err2);
             }
           }
@@ -182,7 +182,8 @@ export default function EmailPassword({
           // creating an account didn't work for some other reason
           setLoading(false);
           setError(translateError(err.code, language, customText));
-          if (callbacks?.signInFailure) callbacks?.signInFailure(err);
+          if (typeof callbacks?.signInFailure === "function")
+            callbacks?.signInFailure(err);
         }
       }
     }
