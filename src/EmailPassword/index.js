@@ -117,7 +117,7 @@ export default function EmailPassword({
           setError(translateError(error.code, language, customText));
           setLoading(false);
           if (callbacks?.signInFailure)
-            callbacks.signInFailure(error);
+            callbacks?.signInFailure(error);
         }
       }
     } else {
@@ -175,14 +175,14 @@ export default function EmailPassword({
                 translateError(err2.code, language, customText),
               );
               if (callbacks?.signInFailure)
-                callbacks.signInFailure(err2);
+                callbacks?.signInFailure(err2);
             }
           }
         } else {
           // creating an account didn't work for some other reason
           setLoading(false);
           setError(translateError(err.code, language, customText));
-          if (callbacks?.signInFailure) callbacks.signInFailure(err);
+          if (callbacks?.signInFailure) callbacks?.signInFailure(err);
         }
       }
     }
