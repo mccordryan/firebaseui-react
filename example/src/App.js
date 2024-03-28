@@ -54,6 +54,10 @@ export default function Home() {
     // formInputStyles: { backgroundColor: "#ebebeb" }
     customText: {
       signInWith: "yo mama use",
+      errors: {
+        "auth/too-many-requests": "please stop doing that",
+        "auth/invalid-credential": "you're not allowed to do that",
+      },
     },
   };
 

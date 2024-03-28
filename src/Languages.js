@@ -283,6 +283,8 @@ export const languages = {
       "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
         "The Firebase API key is not valid.",
       "auth/invalid-credential": "Incorrect email or password",
+      "auth/too-many-requests":
+        "You've tried to do that too many times. Please try again later.",
     },
   },
   // French Français
@@ -653,7 +655,7 @@ export const translateError = (
 ) => {
   // Use optional chaining and nullish coalescing to gracefully handle null or undefined values
   let rest =
-    customTextMap?.[key] ??
+    customTextMap?.errors?.[key] ??
     languages[language]?.errors?.[key] ??
     languages[language]?.["somethingWentWrong"] ??
     languages["en"].errors[key] ??
