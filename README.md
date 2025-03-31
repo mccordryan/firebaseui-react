@@ -2,6 +2,10 @@
 
 firebaseui-react is a component library that allows you to add Firebase authentication to your React.js or Next.js project with only a few lines of code, regardless of your specific use case.
 
+# A note on maintenance
+
+I no longer use Firebase and consequently do not maintain this repository anymore. To my knowledge, it is still compatible with the latest version of Firebase at this point in time (March, 2025). 
+
 # Demo
 
 See a demo here: https://fuidemo.vercel.app/
